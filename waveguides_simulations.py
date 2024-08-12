@@ -44,14 +44,14 @@ class GeomBuilder(LumObj):
         name_bottom = "SiN_input_wg", 
         material_top        = "InP - Palik",
         material_bottom     = "Si3N4 (Silicon Nitride) - Phillip",
-        material_background = "SiO2 (Glass) - Palik", 
-        width_top     = 500e-9,
-        width_bottom  = 500e-9,
-        height_top    = 313e-9, 
+        #material_background = "SiO2 (Glass) - Palik", 
+        width_top     = 550e-9,
+        width_bottom  = 550e-9,
+        height_top    = 250e-9, 
         height_bottom = 350e-9,
-        length_top    = 10e-6, 
-        length_bottom = 10e-6,
-        x = 0,
+        length_top    = 2e-6, 
+        length_bottom = 2e-6,
+        x_min = 0,
         y = 0,
         z = 0
     ): 
@@ -73,21 +73,21 @@ class GeomBuilder(LumObj):
         
         configuration_geometry = (
         (name_top,    (("material", material_top),
-                       ("x", x),
+                       ("x min", x_min),
                        ("y", y),
                        ("z min", 0),
                        ("z max", height_top),                       
-                       ("x span", length_top),
+                       ("x max", length_top),
                        ("y span", width_top),
                        ("z span", height_top))),
                        
 
         (name_bottom, (("material", material_bottom),
-                       ("x", x),
+                       ("x min", x_min),
                        ("y", y),
                        ("z min", -height_bottom),
                        ("z max", 0), 
-                       ("x span", length_bottom),
+                       ("x max", length_bottom),
                        ("y span", width_bottom),
                        ("z span", height_bottom))),
         )
@@ -97,16 +97,18 @@ class GeomBuilder(LumObj):
         self.configuration = configuration_geometry
         self.update_configuration()
         
+        env.groupscope('::model')
+
     def output_wg(
         self,
         name = 'Output_wg',
         material = 'Si3N4 (Silicon Nitride) - Phillip',
-        width = 500e-9,
-        height = 313e-9,
-        length = 10e-6,
-        x = 0,
+        width = 1100e-9,
+        height = 350e-9,
+        length = 2e-6,
+        x = 22e-6,
         y = 0,
-        z = 0
+        z = -175e-9
     ):
         env = self.env
 
@@ -134,21 +136,47 @@ class GeomBuilder(LumObj):
         self.configuration = configuration_geometry
         self.update_configuration()
     
+        env.groupscope('::model')
+
     def taper_in(
         self,
         name = 'Taper_in',
-        height: float = 313e-9,
+        height: float = 250e-9,
         length: float = 19e-6,
         width_in: float = 550e-9,
         width_out: float = 50e-9,
-        x: float = 0,
+        x: float = 11.5e-6,
         y: float = 0,
-        z: float = 0,
+        z: float = 125e-9,
         material: str = 'InP - Palik',
         m: float = 0.8,
     ):
         env = self.env
 
+        #script
+        script_taper_in = '''        
+    res = 5000; #resolution of polygon
+    xspan = linspace(-len/2,len/2,res);
+    a = (w1/2 - w2/2)/len^m;
+    yspan = a * (len*0.5 - xspan)^m + w2/2;
+    
+    V = matrix(2*res,2);
+    #[x,y] points
+    V(1:2*res,1) = [xspan, flip(xspan,1)]; 
+    V(1:2*res,2) = [-yspan , flip(yspan,1)];
+    
+    addpoly;
+    set("name", "taper");
+    set("x",x2);
+    set("y",y2);
+    set("z",z2);
+    set("z span",h1);
+    set("vertices",V);
+    set("material", mat);
+    
+
+'''
+        print(f"script variable is of type {type(script_taper_in)}\n Script is: {script_taper_in}")
         #Taper group
         env.addgroup()
         env.set('name','Taper')
@@ -164,9 +192,31 @@ class GeomBuilder(LumObj):
         env.adduserprop('w1',2,width_in)
         env.adduserprop('w2',2,width_out)
         env.adduserprop('m',0,m)
-        '''configuration_geometry = (
-            (name,("script", '
-        
+        env.adduserprop('mat',1,material)
+        env.adduserprop('x2',2,x)
+        env.adduserprop('y2',2,y)
+        env.adduserprop('z2',2,z)
+
+        env.set('script',script_taper_in)
+        #env.groupscope('::model::Taper')
+    
+    def taper_out(
+        self,
+        name = 'Taper_out',
+        height: float = 0.35e-6,
+        length: float = 19e-6,
+        width_in: float = 550e-9,
+        width_out: float = 1.1e-6,
+        m: float = 7,
+        x: float = 11.5e-6,
+        y: float = 0,
+        z: float = -175e-9,
+        material: str = 'Si3N4 (Silicon Nitride) - Phillip',
+    ):
+        env = self.env
+
+        #Script
+        script_taper_out = '''        
     res = 5000; #resolution of polygon
     xspan = linspace(-len/2,len/2,res);
     a = (w1/2 - w2/2)/len^m;
@@ -179,19 +229,34 @@ class GeomBuilder(LumObj):
     
     addpoly;
     set("name", "taper");
-    set("x",0);
-    set("y",0);
-    set("z",0);
+    set("x",x2);
+    set("y",y2);
+    set("z",z2);
     set("z span",h1);
     set("vertices",V);
     set("material", mat);
-    
    
-    
-    '))
 
-        )'''
+    '''
+        
+        #Taper group
+        env.addstructuregroup()
+        env.set('name',name)
+        env.set('construction group', 1)
+        env.addtogroup('Taper')
 
+        #Taper 
+        env.adduserprop('len',2,length)
+        env.adduserprop('h1',2,height)
+        env.adduserprop('w1',2,width_in)
+        env.adduserprop('w2',2,width_out)
+        env.adduserprop('m',0,m)
+        env.adduserprop('mat',1,material)
+        env.adduserprop('x2',2,x)
+        env.adduserprop('y2',2,y)
+        env.adduserprop('z2',2,z)
+
+        env.set('script',script_taper_out)
 
     @property
     def env(self):
