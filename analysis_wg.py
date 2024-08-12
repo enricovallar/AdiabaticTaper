@@ -50,7 +50,7 @@ class Analysis_wg:
     @staticmethod
     def plot_field(ax, data, title):
         
-
+    
         ax.set_xlabel("x (\u00B5m)")
         ax.set_ylabel("y (\u00B5m)")
         
@@ -101,21 +101,24 @@ if __name__ == "__main__":
     
     #%%
 
-    
+    plt.ion()
     for data, width in zip(data_array, width_array):
-        figure, axs = plt.subplots(3,3)
-        plt.tight_layout(rect=[0, 0, 1, 0.85])
+        figure, axs = plt.subplots(2,2)
+        #plt.tight_layout(rect=[0, 0, 1, 0.85])
         fig_title = f"Electric field intensity in $InP$ over $Si_3N_4$\n $Width={width/1e-9:.0f}nm$"
         figure.suptitle(fig_title, fontsize=14, fontweight="bold")
-        print(f"width={width}")
+        
         i =0
-        for mode, ax in zip(data, axs.flatten()):
+        for mode, ax in zip(data[0:3], axs.flatten()):
             i+=1
-            print(f"mode n°{i}")
             title =  f"$mode={i}$ with $n_{{eff}} = {np.squeeze(mode['neff'].real):.2f}$"
             Analysis_wg.plot_field(ax,mode, title)
+        plt.show()
+        plt.pause(0.5)
+    plt.ioff()
+
         
-    plt.show()
+    
     
 
 # %%
