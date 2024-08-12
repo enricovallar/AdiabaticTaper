@@ -63,19 +63,17 @@ class Analysis_wg:
     def plot_neff( data_array, width_array, title, subtitle=None):
         for data, width in zip(data_array, width_array):
             for mode in data:
-                print(mode)
                 try:
                     f = mode["te_fraction"]
                     color = (f, 0, 1-f)
-                    plt.scatter(width, mode["neff"].real, c=color)
+                    plt.scatter(width, mode["neff"].real, color=color)
                 except:
                     plt.scatter(width, None)
                 
         plt.grid()
         plt.xlabel("width")
         plt.ylabel("$n_{eff}$")
-        plt.title(title, pad=40)
-        plt.suptitle(subtitle, y=0.97, fontsize=10)
+        plt.title(f"{title}\n{subtitle}", pad=40)
         plt.show()
             
 
@@ -84,10 +82,10 @@ if __name__ == "__main__":
     import pickle 
     import os
     import numpy as np 
-    from AdiabaticTaper.analysis_wg import Analysis_wg
+    from analysis_wg import Analysis_wg
     import matplotlib.pyplot as plt
     
-    DATAFILE_PATH = 'input_wg_data_ok.pickle'
+    DATAFILE_PATH = '..\input_wg_data_ok.pickle'
     with open(DATAFILE_PATH, 'rb') as file:
         loaded_data = pickle.load(file)
     
