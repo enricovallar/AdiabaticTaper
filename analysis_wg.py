@@ -84,7 +84,7 @@ if __name__ == "__main__":
     import pickle 
     import os
     import numpy as np 
-    from analysis_wg import Analysis_wg
+    from AdiabaticTaper.analysis_wg import Analysis_wg
     import matplotlib.pyplot as plt
     
     DATAFILE_PATH = 'input_wg_data_ok.pickle'

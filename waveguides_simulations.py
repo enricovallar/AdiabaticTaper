@@ -92,7 +92,7 @@ class GeomBuilder(LumObj):
                        ("z span", height_bottom))),
         )
         
-        env.groupscope("::model::Input Waveguides");
+        env.groupscope("::model::Input Waveguides")
         
         self.configuration = configuration_geometry
         self.update_configuration()
@@ -103,7 +103,7 @@ class GeomBuilder(LumObj):
         material = 'Si3N4 (Silicon Nitride) - Phillip',
         width = 500e-9,
         height = 313e-9,
-        length = 10e-6
+        length = 10e-6,
         x = 0,
         y = 0,
         z = 0
@@ -132,28 +132,65 @@ class GeomBuilder(LumObj):
         env.groupscope('::model::Output Waveguide')
 
         self.configuration = configuration_geometry
-        print (self.configuration)
         self.update_configuration()
     
     def taper_in(
         self,
-        name = 'Taper_in'
-        height,
-        length,
-        width,
-        x,
-        y,
-        z,
-        material
+        name = 'Taper_in',
+        height: float = 313e-9,
+        length: float = 19e-6,
+        width_in: float = 550e-9,
+        width_out: float = 50e-9,
+        x: float = 0,
+        y: float = 0,
+        z: float = 0,
+        material: str = 'InP - Palik',
+        m: float = 0.8,
     ):
         env = self.env
 
         #Taper group
-        env.addstructuregroup()
+        env.addgroup()
         env.set('name','Taper')
 
         #Taper
+        env.addstructuregroup()
+        env.set('name',name)
+        env.set('construction group', 1)
+        env.addtogroup('Taper')
 
+        env.adduserprop('len',2,length)
+        env.adduserprop('h1',2,height)
+        env.adduserprop('w1',2,width_in)
+        env.adduserprop('w2',2,width_out)
+        env.adduserprop('m',0,m)
+        '''configuration_geometry = (
+            (name,("script", '
+        
+    res = 5000; #resolution of polygon
+    xspan = linspace(-len/2,len/2,res);
+    a = (w1/2 - w2/2)/len^m;
+    yspan = a * (len*0.5 - xspan)^m + w2/2;
+    
+    V = matrix(2*res,2);
+    #[x,y] points
+    V(1:2*res,1) = [xspan, flip(xspan,1)]; 
+    V(1:2*res,2) = [-yspan , flip(yspan,1)];
+    
+    addpoly;
+    set("name", "taper");
+    set("x",0);
+    set("y",0);
+    set("z",0);
+    set("z span",h1);
+    set("vertices",V);
+    set("material", mat);
+    
+   
+    
+    '))
+
+        )'''
 
 
     @property
@@ -266,8 +303,8 @@ class WaveguideModeFinder(LumSimulation):
 #----------------------TEST----------------------------
 if __name__ == "__main__": 
     #%%
-    from waveguides_simulations import GeomBuilder
-    from waveguides_simulations import WaveguideModeFinder
+    from AdiabaticTaper.waveguides_simulations import GeomBuilder
+    from AdiabaticTaper.waveguides_simulations import WaveguideModeFinder
     import importlib.util
     #The default paths for windows
     spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
@@ -300,7 +337,7 @@ if __name__ == "__main__":
     
     
     #%%
-    from analysis_wg import Analysis_wg
+    from AdiabaticTaper.analysis_wg import Analysis_wg
     PATH = "output_waveguide"
     found_modes = []
     i=0
