@@ -87,7 +87,7 @@ if __name__ == "__main__":
     from AdiabaticTaper.analysis_wg import Analysis_wg
     import matplotlib.pyplot as plt
     
-    DATAFILE_PATH = 'input_wg_data_ok.pickle'
+    DATAFILE_PATH = '..\input_wg_data_ok.pickle'
     with open(DATAFILE_PATH, 'rb') as file:
         loaded_data = pickle.load(file)
     
