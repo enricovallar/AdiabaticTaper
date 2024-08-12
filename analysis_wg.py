@@ -1,17 +1,20 @@
-import lumapi
+import importlib.util
+#The default paths for windows
+spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
+#Functions that perform the actual loading
+lumapi = importlib.util.module_from_spec(spec_win) # 
+spec_win.loader.exec_module(lumapi)
+import numpy as np
+import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm, Normalize
 
 
-
-
-
-
 class Analysis_wg:
     
     @staticmethod
-    def extract_data(env: lumapi, mode):
+    def extract_data(env, mode):
         neff = env.getdata(mode, "neff")
         te_fraction = env.getdata(mode, "TE polarization fraction")
     
@@ -58,26 +61,21 @@ class Analysis_wg:
 
     @staticmethod
     def plot_neff( data_array, width_array, title, subtitle=None):
-        
         for data, width in zip(data_array, width_array):
             for mode in data:
+                print(mode)
                 try:
                     f = mode["te_fraction"]
                     color = (f, 0, 1-f)
-                    plt.scatter(width, mode["neff"].real, color=color)
+                    plt.scatter(width, mode["neff"].real, c=color)
                 except:
                     plt.scatter(width, None)
                 
         plt.grid()
         plt.xlabel("width")
         plt.ylabel("$n_{eff}$")
-        
-        # Combine title and subtitle
-        if subtitle:
-            plt.title(f"{title}\n{subtitle}", pad=40)
-        else:
-            plt.title(f"{title}", pad=20)
-
+        plt.title(title, pad=40)
+        plt.suptitle(subtitle, y=0.97, fontsize=10)
         plt.show()
             
 

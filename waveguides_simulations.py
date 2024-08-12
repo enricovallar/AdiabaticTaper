@@ -1,4 +1,9 @@
-import lumapi
+import importlib.util
+#The default paths for windows
+spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
+#Functions that perform the actual loading
+lumapi = importlib.util.module_from_spec(spec_win) # 
+spec_win.loader.exec_module(lumapi)
 import numpy as np
 
 class LumObj:
@@ -35,8 +40,8 @@ class GeomBuilder(LumObj):
          
     def input_wg(
         self,
-        name_top    = "InP_wg",
-        name_bottom = "SiN_wg", 
+        name_top    = "InP_input_wg",
+        name_bottom = "SiN_input_wg", 
         material_top        = "InP - Palik",
         material_bottom     = "Si3N4 (Silicon Nitride) - Phillip",
         material_background = "SiO2 (Glass) - Palik", 
@@ -46,6 +51,9 @@ class GeomBuilder(LumObj):
         height_bottom = 350e-9,
         length_top    = 10e-6, 
         length_bottom = 10e-6,
+        x = 0,
+        y = 0,
+        z = 0
     ): 
           
         env = self.env
@@ -65,8 +73,8 @@ class GeomBuilder(LumObj):
         
         configuration_geometry = (
         (name_top,    (("material", material_top),
-                       ("x", 0),
-                       ("y", 0),
+                       ("x", x),
+                       ("y", y),
                        ("z min", 0),
                        ("z max", height_top),                       
                        ("x span", length_top),
@@ -75,8 +83,8 @@ class GeomBuilder(LumObj):
                        
 
         (name_bottom, (("material", material_bottom),
-                       ("x", 0),
-                       ("y", 0),
+                       ("x", x),
+                       ("y", y),
                        ("z min", -height_bottom),
                        ("z max", 0), 
                        ("x span", length_bottom),
@@ -89,8 +97,65 @@ class GeomBuilder(LumObj):
         self.configuration = configuration_geometry
         self.update_configuration()
         
+    def output_wg(
+        self,
+        name = 'Output_wg',
+        material = 'Si3N4 (Silicon Nitride) - Phillip',
+        width = 500e-9,
+        height = 313e-9,
+        length = 10e-6
+        x = 0,
+        y = 0,
+        z = 0
+    ):
+        env = self.env
+
+        #Output waveguide group
+        env.addgroup()
+        env.set('name','Output Waveguide')
+
+        #Waveguide
+        env.addrect()
+        env.set('name',name)
+        env.addtogroup('Output Waveguide')
+
+        configuration_geometry =   (
+        (name,   (('material',material),
+                ('x',x),
+                ('y',y),
+                ('z',z),
+                ('y span',width),
+                ('z span',height),
+                ('x span',length))),
+        )
+
+        env.groupscope('::model::Output Waveguide')
+
+        self.configuration = configuration_geometry
+        print (self.configuration)
+        self.update_configuration()
     
-            
+    def taper_in(
+        self,
+        name = 'Taper_in'
+        height,
+        length,
+        width,
+        x,
+        y,
+        z,
+        material
+    ):
+        env = self.env
+
+        #Taper group
+        env.addstructuregroup()
+        env.set('name','Taper')
+
+        #Taper
+
+
+
     @property
     def env(self):
         return self._env  
@@ -203,7 +268,12 @@ if __name__ == "__main__":
     #%%
     from waveguides_simulations import GeomBuilder
     from waveguides_simulations import WaveguideModeFinder
-    import lumapi
+    import importlib.util
+    #The default paths for windows
+    spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
+    #Functions that perform the actual loading
+    lumapi = importlib.util.module_from_spec(spec_win) # 
+    spec_win.loader.exec_module(lumapi)
     import numpy as np
     import time
     import pickle
@@ -212,11 +282,14 @@ if __name__ == "__main__":
 
 
     width = 500e-6
-    SIM_NAME = "input_waveguide"
+    PATH_FOLDER = "output_waveguide"
+    
     try:
-        os.mkdir("dataset_"+SIM_NAME)
+        os.mkdir(PATH_FOLDER)
     except:
         pass
+
+
 
     # %%
     width_start = 100
@@ -228,7 +301,7 @@ if __name__ == "__main__":
     
     #%%
     from analysis_wg import Analysis_wg
-    PATH = "sim_input_wg"
+    PATH = "output_waveguide"
     found_modes = []
     i=0
     #%%
@@ -243,17 +316,17 @@ if __name__ == "__main__":
         env.deleteall()
         print(f"Starting with width: {width}")
         geom = GeomBuilder(env)
-        geom.input_wg(width_bottom = width, width_top = width)
+        geom.output_wg(width = width)
     
         
         env.groupscope("::model")
 
         sim = WaveguideModeFinder(env)
-        sim.add_simulation_region(width_simulation = 4*width, number_of_trial_modes=20)
-        sim.add_mesh(width_mesh= 2*width, N=300)
+        sim.add_simulation_region(width_simulation = 4*width, height_simulation = 5*313e-9, number_of_trial_modes=20)
+        sim.add_mesh(width_mesh= 2*width, height_mesh=2*313e-9, N=300)
 
         print("Saving model before simulation...")
-        env.save(PATH + "/input_modes_"+str(i))
+        env.save(PATH + "/output_modes_"+str(i))
         print("Simulating...")
 
         env.run()
@@ -265,34 +338,39 @@ if __name__ == "__main__":
         print(f"In total I have {found_modes} modes")
 
         print("Saving model after simulation...")
-        env.save("input_modes_"+str(i))
+        env.save("output_modes_"+str(i))
         env.close()
     
     #%%
     import pickle
     import os
-    import lumapi
+    import importlib.util
+    #The default paths for windows
+    spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
+    #Functions that perform the actual loading
+    lumapi = importlib.util.module_from_spec(spec_win) # 
+    spec_win.loader.exec_module(lumapi)
     import numpy as np
 
-    PATH = "sim_input_wg"
+    PATH = "sim_output_wg"
 
-    width_start = 100
-    width_stop  = 1000
-    width_step = 50
+    width_start = 500
+    width_stop  = 3000
+    width_step = 100
     width_array = np.arange(width_start, width_stop+width_step, width_step)*1e-9
     print(width_array)
 
     data_array = []
 
     env = lumapi.MODE()
-    env.load(PATH+"/input_modes_0")
+    env.load(PATH+"/output_modes_0")
 
     for i,width in enumerate(width_array):
 
         data = []
         for j in range(1, found_modes[i]+1):
             
-            env.load("input_modes_"+str(i))
+            env.load("output_modes_"+str(i))
             mode = "FDE::data::mode" + str(j)
             try:       
                 extracted_data = (Analysis_wg.extract_data(env, mode))
@@ -304,7 +382,7 @@ if __name__ == "__main__":
         data_array.append(data)
         print(f"width {width} data collected")
 
-    DATAFILE_PATH = 'input_wg_data.pickle'
+    DATAFILE_PATH = 'output_wg_data_ok.pickle'
     if os.path.exists(DATAFILE_PATH):
         os.remove(DATAFILE_PATH)
     with open(DATAFILE_PATH, 'wb') as file:
