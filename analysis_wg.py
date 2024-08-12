@@ -66,14 +66,14 @@ class Analysis_wg:
                 try:
                     f = mode["te_fraction"]
                     color = (f, 0, 1-f)
-                    plt.scatter(width, mode["neff"].real, c=color)
+                    plt.scatter(width, mode["neff"].real, color=color)
                 except:
                     plt.scatter(width, None)
                 
         plt.grid()
         plt.xlabel("width")
         plt.ylabel("$n_{eff}$")
-        plt.title(f"{title}\n{subtitle}" pad=40)
+        plt.title(f"{title}\n{subtitle}", pad=40)
         plt.show()
             
 
