@@ -56,25 +56,26 @@ class Analysis_wg:
         
         ax.pcolormesh(data["y"]*1e6,data["z"]*1e6,np.transpose(data["E2"]),shading = 'gouraud',cmap = 'jet', norm=Normalize(vmin=0, vmax=1))
         ax.set_title(title)
+        
 
         
 
     @staticmethod
     def plot_neff( data_array, width_array, title, subtitle=None):
+        plt.figure(figsize=(10, 6))
         for data, width in zip(data_array, width_array):
             for mode in data:
                 try:
                     f = mode["te_fraction"]
                     color = (f, 0, 1-f)
-                    plt.scatter(width, mode["neff"].real, color=color)
+                    plt.scatter(width/1e-9, mode["neff"].real, color=color)
                 except:
                     plt.scatter(width, None)
                 
         plt.grid()
-        plt.xlabel("width")
+        plt.xlabel("width [nm]")
         plt.ylabel("$n_{eff}$")
-        plt.title(f"{title}\n{subtitle}", pad=40)
-        plt.show()
+        plt.title(f"{title}\n{subtitle}")
             
 
 if __name__ == "__main__":
@@ -95,22 +96,26 @@ if __name__ == "__main__":
 
 
     title = "Effective index"
-    subtitle = "$313\; nm$ thick $InP$ over $350\; nm$ thick $Si_3N_4$ with the same size. \n Color is related to TE polarization fraction, red is TE and blue is TM."
+    subtitle = "$313\; nm$ thick $InP$ over $350\; nm$ thick $Si_3N_4$ with the same width. \n Dot color is related to TE polarization fraction, red is TE and blue is TM."
     Analysis_wg.plot_neff(data_array, width_array, title, subtitle)
     
+    #%%
 
+    
     for data, width in zip(data_array, width_array):
         figure, axs = plt.subplots(3,3)
         plt.tight_layout(rect=[0, 0, 1, 0.85])
         fig_title = f"Electric field intensity in $InP$ over $Si_3N_4$\n $Width={width/1e-9:.0f}nm$"
         figure.suptitle(fig_title, fontsize=14, fontweight="bold")
-        
+        print(f"width={width}")
         i =0
         for mode, ax in zip(data, axs.flatten()):
             i+=1
+            print(f"mode n°{i}")
             title =  f"$mode={i}$ with $n_{{eff}} = {np.squeeze(mode['neff'].real):.2f}$"
             Analysis_wg.plot_field(ax,mode, title)
-
+        
+    plt.show()
     
 
 # %%
