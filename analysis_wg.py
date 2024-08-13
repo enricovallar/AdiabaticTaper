@@ -55,7 +55,48 @@ class Analysis_wg:
         ax.set_ylabel("y (\u00B5m)")
         
         ax.pcolormesh(data["y"]*1e6,data["z"]*1e6,np.transpose(data["E2"]),shading = 'gouraud',cmap = 'jet', norm=Normalize(vmin=0, vmax=1))
-        ax.set_title(title)
+        ax.set_title(title, fontsize = 10)
+
+
+    @staticmethod
+    def plot_field_zoomed(ax, data, title, zoom_factor=0.75):
+        """
+        Plots the zoomed-in field data.
+
+        Parameters:
+        - ax: Matplotlib Axes object to plot on.
+        - data: Dictionary containing field data including 'y', 'z', and 'E2'.
+        - title: The title for the plot.
+        - zoom_factor: Fraction of the data to display, centered around the middle. Default is 0.75.
+        """
+        # Extract the original x (data["y"]) and y (data["z"]) ranges
+        y_range = data["y"] * 1e6  # Convert to micrometers
+        z_range = data["z"] * 1e6  # Convert to micrometers
+
+        # Calculate the center indices
+        y_center = len(y_range) // 2
+        z_center = len(z_range) // 2
+
+        # Define the zoom range based on the zoom factor
+        y_zoom_range = y_range[int(y_center - len(y_range)*(zoom_factor/2)):int(y_center + len(y_range)*(zoom_factor/2))]
+        z_zoom_range = z_range[int(z_center - len(z_range)*(zoom_factor/2)):int(z_center + len(z_range)*(zoom_factor/2))]
+
+        # Also zoom in on the corresponding E2 data
+        E2_zoom = np.transpose(data["E2"])[
+            int(y_center - len(y_range)*(zoom_factor/2)):int(y_center + len(y_range)*(zoom_factor/2)),
+            int(z_center - len(z_range)*(zoom_factor/2)):int(z_center + len(z_range)*(zoom_factor/2))
+        ]
+
+        # Plot the zoomed data
+        ax.set_xlabel("x (\u00B5m)")
+        ax.set_ylabel("y (\u00B5m)")
+        
+        ax.pcolormesh(y_zoom_range, z_zoom_range, E2_zoom, shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=1))
+        ax.set_title(title, fontsize=10)
+
+        # Set the aspect ratio to be equal
+        ax.set_aspect('equal', 'box')
+
         
 
         
@@ -103,18 +144,19 @@ if __name__ == "__main__":
 
     plt.ion()
     for data, width in zip(data_array, width_array):
-        figure, axs = plt.subplots(2,2)
+        figure, axs = plt.subplots(2,2, constrained_layout = True)
         #plt.tight_layout(rect=[0, 0, 1, 0.85])
+        
         fig_title = f"Electric field intensity in $InP$ over $Si_3N_4$\n $Width={width/1e-9:.0f}nm$"
         figure.suptitle(fig_title, fontsize=14, fontweight="bold")
         
         i =0
-        for mode, ax in zip(data[0:3], axs.flatten()):
+        for mode, ax in zip(data[0:4], axs.flatten()):
             i+=1
-            title =  f"$mode={i}$ with $n_{{eff}} = {np.squeeze(mode['neff'].real):.2f}$"
-            Analysis_wg.plot_field(ax,mode, title)
+            title =  f"$mode\; {i}$: $n_{{eff}} = {np.squeeze(mode['neff'].real):.2f}$, $f_{{TE}}={mode['te_fraction']*100:.0f}\%$"
+            Analysis_wg.plot_field_zoomed(ax,mode, title, zoom_factor = 60)
         plt.show()
-        plt.pause(0.5)
+        plt.pause(0.1)
     plt.ioff()
 
         
