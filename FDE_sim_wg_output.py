@@ -1,7 +1,5 @@
-#%%
-
-from waveguides_simulations import GeomBuilder
-from waveguides_simulations import WaveguideModeFinder
+from AdiabaticTaper.waveguides_simulations import GeomBuilder
+from AdiabaticTaper.waveguides_simulations import WaveguideModeFinder
 import importlib.util
 #The default paths for windows
 spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
@@ -15,39 +13,33 @@ import os
 import matplotlib.pyplot as plt
 
 
-
-PATH_MODELS = "../models_wg_output"
-FILE_NAME   = "wg_width_"
+width = 500e-6
+PATH_FOLDER = "output_waveguide"
 
 try:
-    os.mkdir(PATH_MODELS)
+    os.mkdir(PATH_FOLDER)
 except:
     pass
 
 
 
 # %%
-
-height_InP = 313e-9
-height_SiN = 350e-9
-
-
-width_start = 500
-width_stop  = 3000
-width_step = 100
+width_start = 100
+width_stop  = 1000
+width_step = 50
 width_array = np.arange(width_start, width_stop+width_step, width_step)*1e-9
 print(width_array)
 
 
 #%%
-from analysis_wg import Analysis_wg
-
+from AdiabaticTaper.analysis_wg import Analysis_wg
+PATH = "output_waveguide"
 found_modes = []
 i=0
 #%%
 
 for i,width in enumerate(width_array):
-   
+    
     env = lumapi.MODE()  
 
     layoutmode_ = env.layoutmode()
@@ -56,19 +48,17 @@ for i,width in enumerate(width_array):
     env.deleteall()
     print(f"Starting with width: {width}")
     geom = GeomBuilder(env)
-    geom.output_wg(width=width) # <------------DEFINE THE GEOMETRY
+    geom.output_wg(width = width)
 
     
     env.groupscope("::model")
 
     sim = WaveguideModeFinder(env)
-    sim.add_simulation_region(width_simulation = 4* width, height_simulation=4*(height_SiN), number_of_trial_modes=20)
-    sim.add_mesh(width_mesh= 2*width, height_mesh=2*(height_SiN), N=300)
-    
-
+    sim.add_simulation_region(width_simulation = 4*width, height_simulation = 5*313e-9, number_of_trial_modes=20)
+    sim.add_mesh(width_mesh= 2*width, height_mesh=2*313e-9, N=300)
 
     print("Saving model before simulation...")
-    env.save(f"{PATH_MODELS}/{FILE_NAME}{i}")
+    env.save(PATH + "/output_modes_"+str(i))
     print("Simulating...")
 
     env.run()
@@ -80,62 +70,5 @@ for i,width in enumerate(width_array):
     print(f"In total I have {found_modes} modes")
 
     print("Saving model after simulation...")
-    env.save(f"{FILE_NAME}{i}")
+    env.save("output_modes_"+str(i))
     env.close()
- # %%
-
-import pickle
-import os
-import importlib.util
-#The default paths for windows
-spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
-#Functions that perform the actual loading
-lumapi = importlib.util.module_from_spec(spec_win) # 
-spec_win.loader.exec_module(lumapi)
-import numpy as np
-
-FOLDER_PATH = "../models_wg_output/"
-FILE_NAME = "wg_width_"
-SAVED_DATA_FOLDER = "../saved_data/"
-DATA_FILE_NAME = "wg_output_data.pickle"
-
-width_start = 500
-width_stop  = 3000
-width_step = 100
-width_array = np.arange(width_start, width_stop+width_step, width_step)*1e-9
-print(width_array)
-
-data_array = []
-
-
-env = lumapi.MODE()
-env.load(f"{FOLDER_PATH}{FILE_NAME}0")
-
-for i,width in enumerate(width_array):
-    data = []
-    for j in range(1, found_modes[i]+1):
-        
-        env.load(f"{FILE_NAME}{i}")
-        mode = "FDE::data::mode" + str(j)
-        try:       
-            extracted_data = (Analysis_wg.extract_data(env, mode))
-        except:
-            extracted_data = ({})
-        finally:
-            extracted_data["width"] = width
-            data.append(extracted_data)
-    data_array.append(data)
-    print(f"width {width} data collected")
-
-
-if os.path.exists(f"{SAVED_DATA_FOLDER}{DATA_FILE_NAME}"):
-    os.remove(f"{SAVED_DATA_FOLDER}{DATA_FILE_NAME}")
-with open(f"{SAVED_DATA_FOLDER}{DATA_FILE_NAME}", 'wb') as file:
-    pickle.dump({"width_array": width_array, 
-                 "found_modes": found_modes, 
-                 "data_array" : data_array},
-                 file)
-
-
-
-# %%

@@ -29,10 +29,6 @@ class Analysis_wg:
         Ey = np.squeeze(env.getdata(mode, "Ey"))
         Ez = np.squeeze(env.getdata(mode, "Ez"))
 
-        Hx = np.squeeze(env.getdata(mode, "Hx"))
-        Hy = np.squeeze(env.getdata(mode, "Hy"))
-        Hz = np.squeeze(env.getdata(mode, "Hz"))
-
         data = { 
             "neff" : neff,
             "te_fraction" : te_fraction,
@@ -45,12 +41,8 @@ class Analysis_wg:
             "Ey": Ey,
             "Ez": Ez, 
 
-            "Hx": Hx, 
-            "Hy": Hy,
-            "Hz": Hz, 
-
             "E2": E2,
-            "H2": H2, 
+            "H2": H2
         }
 
         return data
