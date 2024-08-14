@@ -207,9 +207,10 @@ class Analysis_wg:
             ylim = (-z_span / 2, z_span / 2)
             ax.set_ylim(ylim)
         
+        values = np.abs(data["Ey"])**2
         purcell_dictionary = data["purcell factors"]
         # Plot the data
-        pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(np.abs(purcell_dictionary[f"gamma_{k}"])), 
+        pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(values), 
                             shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=1))
         
         # Set the title
