@@ -7,26 +7,26 @@ spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\
 lumapi = importlib.util.module_from_spec(spec_win) # 
 spec_win.loader.exec_module(lumapi)
 import numpy as np
-from AdiabaticTaper.waveguides_simulations import GeomBuilder
-from AdiabaticTaper.waveguides_simulations import WaveguideModeFinder
+from waveguides_simulations import GeomBuilder
+from waveguides_simulations import WaveguideModeFinder
 import pickle 
 import os
-from AdiabaticTaper.analysis_wg import Analysis_wg
+from analysis_wg import Analysis_wg
 import matplotlib.pyplot as plt
 
-#Realisation
-env = lumapi.MODE()  
 
-layoutmode_ = env.layoutmode()
-if layoutmode_ == 0:            
-    env.eval("switchtolayout;")
-env.deleteall()
-#print(f"Starting with width: {width}")
-geom = GeomBuilder(env)
-geom.input_wg()
-geom.taper_in()
-geom.taper_out()
-geom.output_wg()
-while True:
-    pass
+from waveguides_simulations import taper_geometry
+
+env = lumapi.MODE()
+width_in   = 500e-9
+width_out = 1000e-9
+width_tip  = 50e-9
+m_in = 0.8
+m_out = 7
+length_taper = 19e-6
+taper_geometry(env=env, 
+               width_in = width_in, width_out=width_out, width_tip=width_tip, 
+               m_in= m_in, m_out=m_out, 
+               length_taper=length_taper
+               )
 # %%
