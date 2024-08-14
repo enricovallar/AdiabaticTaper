@@ -29,6 +29,7 @@ import os
 import numpy as np 
 from analysis_wg import Analysis_wg
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 
 PATH = "../working_data/"
 DATAFILE = 'wg_input_data.pickle'
@@ -41,6 +42,23 @@ data_array  = loaded_data["data_array"]
 
 height_top = 313e-9
 height_bottom = 350e-9
+
+#Function to draw contour
+def draw_contour(ax,
+                 height = [313e-9],
+                 width = 550e-9
+                 ):
+    for h in height:
+        height[height.index(h)]=h/1e-6
+    width=width/1e-6
+    if len(height)==1:
+        ax.add_patch(Rectangle((-width/2,-height[0]/2),width,height[0],fill=None))
+    elif len(height)==2:
+        ax.add_patch(Rectangle((-width/2,0),width,height[0],fill=None))
+        ax.add_patch(Rectangle((-width/2,-height[1]),width,height[1],fill=None))
+    else:
+        pass
+
 plt.ion()
 for data, width in zip(data_array, width_array):
     figure, axs = plt.subplots(2,2, constrained_layout = True)
@@ -58,8 +76,8 @@ for data, width in zip(data_array, width_array):
         i+=1
         title =  f"$mode\; {i}$: $n_{{eff}} = {np.squeeze(mode['neff'].real):.2f}$, $f_{{TE}}={mode['te_fraction']*100:.0f}\%$"
         Analysis_wg.plot_field(ax,mode, title, y_span=3*width/1e-6, z_span=2*(height_top+height_bottom)/1e-6)
-        ax.axhspan(0,height_top/1e-6,1/3,2/3,fill=None)
-        ax.axhspan(-height_bottom/1e-6,0,1/3,2/3,fill=None)
+        draw_contour(ax,height=[height_top,height_bottom],width=width)
+        
     plt.show()
     plt.pause(0.1)
 plt.ioff()
