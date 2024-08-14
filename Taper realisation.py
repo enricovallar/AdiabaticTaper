@@ -7,11 +7,11 @@ spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\
 lumapi = importlib.util.module_from_spec(spec_win) # 
 spec_win.loader.exec_module(lumapi)
 import numpy as np
-from AdiabaticTaper.waveguides_simulations import GeomBuilder
-from AdiabaticTaper.waveguides_simulations import WaveguideModeFinder
+from waveguides_simulations import GeomBuilder
+from waveguides_simulations import WaveguideModeFinder
 import pickle 
 import os
-from AdiabaticTaper.analysis_wg import Analysis_wg
+from analysis_wg import Analysis_wg
 import matplotlib.pyplot as plt
 
 #Realisation
