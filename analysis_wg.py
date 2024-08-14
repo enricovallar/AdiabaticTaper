@@ -1,15 +1,12 @@
-import importlib.util
-#The default paths for windows
-spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
-#Functions that perform the actual loading
-lumapi = importlib.util.module_from_spec(spec_win) # 
-spec_win.loader.exec_module(lumapi)
-import numpy as np
-import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm, Normalize
+import importlib.util
 
+# Load lumapi module (ensure this path is correct)
+spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
+lumapi = importlib.util.module_from_spec(spec_win)
+spec_win.loader.exec_module(lumapi)
 
 class Analysis_wg:
     
@@ -56,15 +53,52 @@ class Analysis_wg:
         return data
     
     @staticmethod
-    def plot_field(ax, data, title):
-        
-    
-        ax.set_xlabel("x (\u00B5m)")
-        ax.set_ylabel("z (\u00B5m)")
-        
-        ax.pcolormesh(data["y"]*1e6,data["z"]*1e6,np.transpose(data["E2"]),shading = 'gouraud',cmap = 'jet', norm=Normalize(vmin=0, vmax=1))
-        ax.set_title(title, fontsize = 10)
+    def calculate_poynting_vector(data):
+        """
+        Calculate both the complex Poynting vector and its time-averaged real part from the electric and magnetic field components.
 
+        Parameters:
+            data (dict): A dictionary containing the electric and magnetic field components.
+
+        Returns:
+            dict: A dictionary with the complex Poynting vector components, the time-averaged real part, and their magnitudes.
+        """
+        # Extract electric and magnetic field components
+        Ex = data["Ex"]
+        Ey = data["Ey"]
+        Ez = data["Ez"]
+        
+        Hx = data["Hx"]
+        Hy = data["Hy"]
+        Hz = data["Hz"]
+        
+        # Calculate the complex Poynting vector components
+        Sx_complex = Ey * np.conj(Hz) - Ez * np.conj(Hy)
+        Sy_complex = Ez * np.conj(Hx) - Ex * np.conj(Hz)
+        Sz_complex = Ex * np.conj(Hy) - Ey * np.conj(Hx)
+        
+        # Calculate the time-averaged (real part) Poynting vector components
+        Sx_real = 0.5 * np.real(Sx_complex)
+        Sy_real = 0.5 * np.real(Sy_complex)
+        Sz_real = 0.5 * np.real(Sz_complex)
+        
+        # Calculate the magnitudes of the Poynting vector
+        S_magnitude_complex = np.sqrt(np.abs(Sx_complex)**2 + np.abs(Sy_complex)**2 + np.abs(Sz_complex)**2)
+        S_magnitude_real = np.sqrt(Sx_real**2 + Sy_real**2 + Sz_real**2)
+        
+        # Store the results in a dictionary
+        poynting_vector = {
+            "Sx_complex": Sx_complex,
+            "Sy_complex": Sy_complex,
+            "Sz_complex": Sz_complex,
+            "S_magnitude_complex": S_magnitude_complex,
+            "Sx_real": Sx_real,
+            "Sy_real": Sy_real,
+            "Sz_real": Sz_real,
+            "S_magnitude_real": S_magnitude_real
+        }
+        
+        return poynting_vector
 
     @staticmethod
     def plot_field(ax, data, title, y_span=None, z_span=None):
@@ -100,13 +134,8 @@ class Analysis_wg:
         
         return pcm
 
-
-        
-
-        
-
     @staticmethod
-    def plot_neff( data_array, width_array, title, subtitle=None):
+    def plot_neff(data_array, width_array, title, subtitle=None):
         plt.figure(figsize=(10, 6))
         for data, width in zip(data_array, width_array):
             for mode in data:
@@ -120,5 +149,5 @@ class Analysis_wg:
         plt.grid()
         plt.xlabel("width [nm]")
         plt.ylabel("$n_{eff}$")
-        plt.title(f"{title}\n{subtitle}")
-            
+        plt.title(f"{title}\n{subtitle}" if subtitle else title)
+        
