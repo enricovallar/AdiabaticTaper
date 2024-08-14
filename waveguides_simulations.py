@@ -47,7 +47,7 @@ class GeomBuilder(LumObj):
         material_background = "SiO2 (Glass) - Palik", 
         width_top     : float = 550e-9,
         width_bottom  : float = 550e-9,
-        height_top    : float = 250e-9, 
+        height_top    : float = 313e-9, 
         height_bottom : float = 350e-9,
         length_top    : float = 10e-6, 
         length_bottom : float = 10e-6,
@@ -56,7 +56,8 @@ class GeomBuilder(LumObj):
         z_ : float = 0,
         x_min_ : float = None,
         y_min_ : float = None,
-        z_min_ : float = None
+        z_min_ : float = None,
+        layout_group_name = "Input Waveguide"
     ): 
         
         if x_min_ is not None: x_ = x_min_/2
@@ -64,19 +65,16 @@ class GeomBuilder(LumObj):
         if z_min_ is not None: z_ = z_min_/2
         
         env = self.env
-  
-        #Input wg group
-        env.addgroup()
-        env.set("name", "Input Waveguides")
+
         
         #Top Waveguide
         env.addrect()
         env.set("name", name_top)
-        env.addtogroup("Input Waveguides")
+        env.addtogroup(layout_group_name)
         #Bottom Waveguide
         env.addrect()
         env.set("name", name_bottom)
-        env.addtogroup("Input Waveguides")
+        env.addtogroup(layout_group_name)
         
         configuration_geometry = (
         (name_top,    (("material", material_top),
@@ -97,7 +95,7 @@ class GeomBuilder(LumObj):
                        ("z max", z_))),
         )
         
-        env.groupscope("::model::Input Waveguides")
+        env.groupscope(f"::model::{layout_group_name}")
         
         self.configuration = configuration_geometry
         self.update_configuration()
@@ -116,7 +114,8 @@ class GeomBuilder(LumObj):
         z_ = 0,
         x_min_ = None, #44e-6
         y_min_ = None,
-        z_min_ = None  #-300e-9
+        z_min_ = None,  #-300e-9
+        layout_group_name = 'Output Waveguide'
     ):
         env = self.env
 
@@ -124,14 +123,11 @@ class GeomBuilder(LumObj):
         if y_min_ is not None: y_ = y_min_/2
         if z_min_ is not None: z_ = z_min_/2
 
-        #Output waveguide group
-        env.addgroup()
-        env.set('name','Output Waveguide')
 
         #Waveguide
         env.addrect()
         env.set('name',name)
-        env.addtogroup('Output Waveguide')
+        env.addtogroup(layout_group_name)
 
         configuration_geometry =   (
         (name,   (('material',material),
@@ -143,7 +139,7 @@ class GeomBuilder(LumObj):
                 ('x span',length))),
         )
 
-        env.groupscope('::model::Output Waveguide')
+        env.groupscope(f'::model::{layout_group_name}')
 
         self.configuration = configuration_geometry
         self.update_configuration()
@@ -153,20 +149,21 @@ class GeomBuilder(LumObj):
     def taper_in(
         self,
         name = 'Taper_in',
-        height: float = 250e-9,
+        height: float = 313e-9,
         length: float = 19e-6,
         width_in: float = 550e-9,
         width_out: float = 50e-9,
-        x: float = 11.5e-6,
-        y: float = 0,
-        z: float = 125e-9,
         material: str = 'InP - Palik',
         m: float = 0.8,
+        layout_group_name = "Taper",
+        z_ = 313e-9/2
     ):
         env = self.env
 
+
         #script
-        script_taper_in = '''        
+        script_taper_in = ''' 
+
     res = 5000; #resolution of polygon
     xspan = linspace(-len/2,len/2,res);
     a = (w1/2 - w2/2)/len^m;
@@ -179,25 +176,22 @@ class GeomBuilder(LumObj):
     
     addpoly;
     set("name", "taper");
-    set("x",x2);
-    set("y",y2);
-    set("z",z2);
+    set("x",0);
+    set("y",0);
+    set("z",0);
     set("z span",h1);
     set("vertices",V);
     set("material", mat);
-    
 
 '''
         print(f"script variable is of type {type(script_taper_in)}\n Script is: {script_taper_in}")
-        #Taper group
-        env.addgroup()
-        env.set('name','Taper')
+        
 
         #Taper
         env.addstructuregroup()
         env.set('name',name)
         env.set('construction group', 1)
-        env.addtogroup('Taper')
+        env.addtogroup(layout_group_name)
 
         env.adduserprop('len',2,length)
         env.adduserprop('h1',2,height)
@@ -205,12 +199,11 @@ class GeomBuilder(LumObj):
         env.adduserprop('w2',2,width_out)
         env.adduserprop('m',0,m)
         env.adduserprop('mat',1,material)
-        env.adduserprop('x2',2,x)
-        env.adduserprop('y2',2,y)
-        env.adduserprop('z2',2,z)
+
 
         env.set('script',script_taper_in)
         #env.groupscope('::model::Taper')
+        env.set("z", z_)
     
     def taper_out(
         self,
@@ -220,10 +213,9 @@ class GeomBuilder(LumObj):
         width_in: float = 550e-9,
         width_out: float = 1.1e-6,
         m: float = 7,
-        x: float = 11.5e-6,
-        y: float = 0,
-        z: float = -175e-9,
         material: str = 'Si3N4 (Silicon Nitride) - Phillip',
+        layout_group_name = "Taper",
+        z_ = -350e-9/2
     ):
         env = self.env
 
@@ -241,9 +233,9 @@ class GeomBuilder(LumObj):
     
     addpoly;
     set("name", "taper");
-    set("x",x2);
-    set("y",y2);
-    set("z",z2);
+    set("x",0);
+    set("y",0);
+    set("z",0);
     set("z span",h1);
     set("vertices",V);
     set("material", mat);
@@ -255,7 +247,7 @@ class GeomBuilder(LumObj):
         env.addstructuregroup()
         env.set('name',name)
         env.set('construction group', 1)
-        env.addtogroup('Taper')
+        env.addtogroup(layout_group_name)
 
         #Taper 
         env.adduserprop('len',2,length)
@@ -264,16 +256,17 @@ class GeomBuilder(LumObj):
         env.adduserprop('w2',2,width_out)
         env.adduserprop('m',0,m)
         env.adduserprop('mat',1,material)
-        env.adduserprop('x2',2,x)
-        env.adduserprop('y2',2,y)
-        env.adduserprop('z2',2,z)
+
 
         env.set('script',script_taper_out)
-
+        env.set("z", z_)
+    
+    
     @property
     def env(self):
         return self._env  
 
+    
 
 class LumSimulation(LumObj):
     def add_simulation_region():
@@ -376,4 +369,69 @@ class WaveguideModeFinder(LumSimulation):
 
     
 
-        
+def taper_geometry(
+        env=lumapi.MODE(),
+        width_in = 550e-9,
+        width_out = 1100e-9,
+        width_tip = 50e-9, 
+        m_in = 0.8,
+        m_out = 7,
+        length_taper = 19e-6
+    ):
+    #print(f"Starting with width: {width}")
+    geom = GeomBuilder(env)
+
+    #realize groups
+    groups = [
+        "Input Waveguide",
+        "Taper",
+        "Output Waveguide",
+    ]
+    for group_name in groups:
+        env.addgroup()
+        env.set("name", group_name)
+
+    #choose lenght
+    length_input  =  10e-6
+
+    length_output =  10e-6
+
+    height_SiN = 350e-9
+    height_InP = 313e-9
+
+
+
+    geom.input_wg(layout_group_name="Input Waveguide", 
+                  length_top=length_input, length_bottom=length_input, 
+                  width_bottom=width_in, width_top=width_in
+                  )
+    geom.taper_in(layout_group_name="Taper", 
+                  length=length_taper, 
+                  width_in=width_in, width_out=width_tip,
+                  m= m_in
+                  )
+    geom.taper_out(layout_group_name="Taper", 
+                   length=length_taper, 
+                   width_in=width_in, width_out=width_out,
+                   m = m_out
+                   )
+    geom.output_wg(layout_group_name="Output Waveguide", 
+                   length=length_output,
+                   width=width_out
+                   )
+
+
+
+    #move the components
+    centers_x = [
+        length_input/2,
+        length_input+length_taper/2,
+        length_input+length_taper+length_output/2
+    ]
+
+    for group_name, position_x in zip(groups, centers_x):  
+        env.setnamed(group_name, "x",  position_x)
+    env.setnamed("Output Waveguide", "z", -height_SiN/2 )
+
+
+# %%
