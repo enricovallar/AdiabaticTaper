@@ -8,6 +8,7 @@ import numpy as np
 from waveguides_simulations import GeomBuilder
 
 
+
 class TaperDesigner:
     def __init__(
             self, 
@@ -24,8 +25,8 @@ class TaperDesigner:
             height_bottom: float = 350e-9, 
     ):
         self._env = env
-        self._geom = GeomBuilder(env)
-
+        self._geom = GeomBuilder(self._env)
+        
 
         groups = [
             "Input Waveguide",
@@ -72,6 +73,10 @@ class TaperDesigner:
             self._env.setnamed(group_name, "x",  position_x)
         self._env.setnamed("Output Waveguide", "z", -height_bottom/2 )
 
+        self.build_simulation_region(self._env)
+    
+    def build_simulation_region(self, env):
+        pass
 
 if __name__ == "__main__":
     #%%
