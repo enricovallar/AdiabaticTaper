@@ -24,6 +24,16 @@ class TaperDesigner:
             height_top: float = 313e-9,
             height_bottom: float = 350e-9, 
     ):
+        self._m_top = m_top 
+        self._m_bottom = m_bottom
+        self._length_taper = length_taper
+        self._width_in = width_in
+        self._width_out = width_out
+        self._width_tip = width_tip
+        self._length_input = length_input
+        self._length_output = length_output
+        self._height_top = height_top
+        self._height_bottom = height_bottom
         self._env = env
         self._geom = GeomBuilder(self._env)
         
@@ -73,10 +83,66 @@ class TaperDesigner:
             self._env.setnamed(group_name, "x",  position_x)
         self._env.setnamed("Output Waveguide", "z", -height_bottom/2 )
 
-        self.build_simulation_region(self._env)
+        self.build_simulation_region()
     
-    def build_simulation_region(self, env):
-        pass
+    def build_simulation_region(self):
+        #Simulation Parameters
+        lam0 = 1550e-9
+        mul_w = 3 
+        mul_h = 3
+        w_EME = mul_w * self._width_out
+        h_EME = mul_h * (self._height_top + self._height_bottom)
+        mat_back = "SiO2 (Glass) - Palik"
+        N_modes = 50
+        x_pen = 4/10*self._length_input #penetration of sim region inside single mode waveguides
+
+        ##Simulation region
+        self._env.addeme()
+        self._env.set('wavelength', lam0)
+        #Position
+        self._env.set('x min', self._length_input - x_pen)
+        self._env.set('y', 0)
+        self._env.set('y span', w_EME)
+        self._env.set('z', (self._height_top-self._height_bottom)/2)
+        self._env.set('z span', h_EME)
+
+        #Boundary conditions
+        self._env.set('y min bc', 'PML')
+        self._env.set('y max bc', 'PML')
+        self._env.set('z min bc', 'PML')
+        self._env.set('z max bc', 'PML')
+
+        #Material
+        self._env.set('background material', mat_back)
+
+        #Cells
+        self._env.set('number of cell groups', 3)
+        self._env.set('group spans',np.array([x_pen, self._length_taper, x_pen]))
+
+        self._env.set('cells',np.array([1,30,1]))
+        self._env.set('subcell method',np.array([0,1,0]))   # 0 = None, 1 = CVCS
+
+        self._env.set('display cells', 1)
+        self._env.set('number of modes for all cell groups', N_modes)
+
+        #Set up ports: port 1
+        self._env.select('EME::Ports::port_1')
+        self._env.set('use full simulation span', 1)
+        self._env.set('y', 0)
+        self._env.set('y span', w_EME)
+        self._env.set('z', 0)
+        self._env.set('z span', h_EME)
+        self._env.set('mode selection', 'fundamental TE mode')
+
+        #Set up ports: port 2
+        self._env.select('EME::Ports::port_2')
+        self._env.set('use full simulation span', 1)
+        self._env.set('y', 0)
+        self._env.set('y span', w_EME)
+        self._env.set('z', 0)
+        self._env.set('z span', h_EME)
+        self._env.set('mode selection', 'fundamental TE mode')
+
 
 if __name__ == "__main__":
     #%%
