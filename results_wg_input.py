@@ -68,4 +68,3 @@ for data, width in zip(data_array, width_array):
 
 # %%
 #________POYNTING   VECTOR__________________
-Analysis_wg.calculate_poynting_vector()
