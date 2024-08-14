@@ -60,50 +60,46 @@ class Analysis_wg:
         
     
         ax.set_xlabel("x (\u00B5m)")
-        ax.set_ylabel("y (\u00B5m)")
+        ax.set_ylabel("z (\u00B5m)")
         
         ax.pcolormesh(data["y"]*1e6,data["z"]*1e6,np.transpose(data["E2"]),shading = 'gouraud',cmap = 'jet', norm=Normalize(vmin=0, vmax=1))
         ax.set_title(title, fontsize = 10)
 
 
     @staticmethod
-    def plot_field_zoomed(ax, data, title, zoom_factor=0.75):
+    def plot_field(ax, data, title, y_span=None, z_span=None):
         """
-        Plots the zoomed-in field data.
+        Plots the electric field intensity on a given axis with customizable window size centered at zero.
 
         Parameters:
-        - ax: Matplotlib Axes object to plot on.
-        - data: Dictionary containing field data including 'y', 'z', and 'E2'.
-        - title: The title for the plot.
-        - zoom_factor: Fraction of the data to display, centered around the middle. Default is 0.75.
+        - ax: The axis to plot on.
+        - data: A dictionary containing 'y', 'z', and 'E2' keys.
+        - title: The title of the plot.
+        - y_span: The width of the window in the y-direction in micrometers. Default is None (auto).
+        - z_span: The height of the window in the z-direction in micrometers. Default is None (auto).
         """
-        # Extract the original x (data["y"]) and y (data["z"]) ranges
-        y_range = data["y"] * 1e6  # Convert to micrometers
-        z_range = data["z"] * 1e6  # Convert to micrometers
-
-        # Calculate the center indices
-        y_center = len(y_range) // 2
-        z_center = len(z_range) // 2
-
-        # Define the zoom range based on the zoom factor
-        y_zoom_range = y_range[int(y_center - len(y_range)*(zoom_factor/2)):int(y_center + len(y_range)*(zoom_factor/2))]
-        z_zoom_range = z_range[int(z_center - len(z_range)*(zoom_factor/2)):int(z_center + len(z_range)*(zoom_factor/2))]
-
-        # Also zoom in on the corresponding E2 data
-        E2_zoom = np.transpose(data["E2"])[
-            int(y_center - len(y_range)*(zoom_factor/2)):int(y_center + len(y_range)*(zoom_factor/2)),
-            int(z_center - len(z_range)*(zoom_factor/2)):int(z_center + len(z_range)*(zoom_factor/2))
-        ]
-
-        # Plot the zoomed data
-        ax.set_xlabel("x (\u00B5m)")
-        ax.set_ylabel("y (\u00B5m)")
+        # Set axis labels
+        ax.set_xlabel("y (\u00B5m)")
+        ax.set_ylabel("z (\u00B5m)")
         
-        ax.pcolormesh(y_zoom_range, z_zoom_range, E2_zoom, shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=1))
+        # Calculate limits centered at zero
+        if y_span is not None:
+            xlim = (-y_span / 2, y_span / 2)
+            ax.set_xlim(xlim)
+        
+        if z_span is not None:
+            ylim = (-z_span / 2, z_span / 2)
+            ax.set_ylim(ylim)
+        
+        # Plot the data
+        pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(data["E2"]), 
+                            shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=1))
+        
+        # Set the title
         ax.set_title(title, fontsize=10)
+        
+        return pcm
 
-        # Set the aspect ratio to be equal
-        ax.set_aspect('equal', 'box')
 
         
 
@@ -126,49 +122,3 @@ class Analysis_wg:
         plt.ylabel("$n_{eff}$")
         plt.title(f"{title}\n{subtitle}")
             
-
-if __name__ == "__main__":
-#%%
-    import pickle 
-    import os
-    import numpy as np 
-    from analysis_wg import Analysis_wg
-    import matplotlib.pyplot as plt
-    
-    DATAFILE_PATH = '..\input_wg_data_ok.pickle'
-    with open(DATAFILE_PATH, 'rb') as file:
-        loaded_data = pickle.load(file)
-    
-    width_array = loaded_data["width_array"]
-    found_modes = loaded_data["found_modes"]
-    data_array  = loaded_data["data_array"]
-
-
-    title = "Effective index"
-    subtitle = "$313\; nm$ thick $InP$ over $350\; nm$ thick $Si_3N_4$ with the same width. \n Dot color is related to TE polarization fraction, red is TE and blue is TM."
-    Analysis_wg.plot_neff(data_array, width_array, title, subtitle)
-    
-    #%%
-
-    plt.ion()
-    for data, width in zip(data_array, width_array):
-        figure, axs = plt.subplots(2,2, constrained_layout = True)
-        #plt.tight_layout(rect=[0, 0, 1, 0.85])
-        
-        fig_title = f"Electric field intensity in $InP$ over $Si_3N_4$\n $Width={width/1e-9:.0f}nm$"
-        figure.suptitle(fig_title, fontsize=14, fontweight="bold")
-        
-        i =0
-        for mode, ax in zip(data[0:4], axs.flatten()):
-            i+=1
-            title =  f"$mode\; {i}$: $n_{{eff}} = {np.squeeze(mode['neff'].real):.2f}$, $f_{{TE}}={mode['te_fraction']*100:.0f}\%$"
-            Analysis_wg.plot_field_zoomed(ax,mode, title, zoom_factor = 60)
-        plt.show()
-        plt.pause(0.1)
-    plt.ioff()
-
-        
-    
-    
-
-# %%
