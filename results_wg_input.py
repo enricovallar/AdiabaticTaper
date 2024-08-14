@@ -6,7 +6,7 @@ from analysis_wg import Analysis_wg
 import matplotlib.pyplot as plt
 
 PATH = "../working_data/"
-DATAFILE = 'wg_input_data.pickle'
+DATAFILE = 'wg_input_data_2.pickle'
 with open(f"{PATH}{DATAFILE}", 'rb') as file:
     loaded_data = pickle.load(file)
 
