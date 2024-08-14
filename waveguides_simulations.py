@@ -146,7 +146,7 @@ class GeomBuilder(LumObj):
     
         env.groupscope('::model')
 
-    def taper_in(
+    def taper_top(
         self,
         name = 'Taper_in',
         height: float = 313e-9,
@@ -205,7 +205,7 @@ class GeomBuilder(LumObj):
         #env.groupscope('::model::Taper')
         env.set("z", z_)
     
-    def taper_out(
+    def taper_bottom(
         self,
         name = 'Taper_out',
         height: float = 0.35e-6,
