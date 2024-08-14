@@ -146,7 +146,7 @@ class GeomBuilder(LumObj):
     
         env.groupscope('::model')
 
-    def taper_in(
+    def taper_top(
         self,
         name = 'Taper_in',
         height: float = 313e-9,
@@ -205,7 +205,7 @@ class GeomBuilder(LumObj):
         #env.groupscope('::model::Taper')
         env.set("z", z_)
     
-    def taper_out(
+    def taper_bottom(
         self,
         name = 'Taper_out',
         height: float = 0.35e-6,
@@ -367,71 +367,3 @@ class WaveguideModeFinder(LumSimulation):
         return n_eff_result, te_fraction_result
         
 
-    
-
-def taper_geometry(
-        env=lumapi.MODE(),
-        width_in = 550e-9,
-        width_out = 1100e-9,
-        width_tip = 50e-9, 
-        m_in = 0.8,
-        m_out = 7,
-        length_taper = 19e-6
-    ):
-    #print(f"Starting with width: {width}")
-    geom = GeomBuilder(env)
-
-    #realize groups
-    groups = [
-        "Input Waveguide",
-        "Taper",
-        "Output Waveguide",
-    ]
-    for group_name in groups:
-        env.addgroup()
-        env.set("name", group_name)
-
-    #choose lenght
-    length_input  =  10e-6
-
-    length_output =  10e-6
-
-    height_SiN = 350e-9
-    height_InP = 313e-9
-
-
-
-    geom.input_wg(layout_group_name="Input Waveguide", 
-                  length_top=length_input, length_bottom=length_input, 
-                  width_bottom=width_in, width_top=width_in
-                  )
-    geom.taper_in(layout_group_name="Taper", 
-                  length=length_taper, 
-                  width_in=width_in, width_out=width_tip,
-                  m= m_in
-                  )
-    geom.taper_out(layout_group_name="Taper", 
-                   length=length_taper, 
-                   width_in=width_in, width_out=width_out,
-                   m = m_out
-                   )
-    geom.output_wg(layout_group_name="Output Waveguide", 
-                   length=length_output,
-                   width=width_out
-                   )
-
-
-
-    #move the components
-    centers_x = [
-        length_input/2,
-        length_input+length_taper/2,
-        length_input+length_taper+length_output/2
-    ]
-
-    for group_name, position_x in zip(groups, centers_x):  
-        env.setnamed(group_name, "x",  position_x)
-    env.setnamed("Output Waveguide", "z", -height_SiN/2 )
-
-
-# %%
