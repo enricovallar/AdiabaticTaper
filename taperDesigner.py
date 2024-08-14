@@ -84,6 +84,8 @@ class TaperDesigner:
         self._env.setnamed("Output Waveguide", "z", -height_bottom/2 )
 
         self.build_simulation_region()
+        
+        self.build_mesh()
     
     def build_simulation_region(self):
         #Simulation Parameters
@@ -143,6 +145,33 @@ class TaperDesigner:
         self._env.set('z span', h_EME)
         self._env.set('mode selection', 'fundamental TE mode')
 
+    def build_mesh(self):
+        #Mesh parameters
+        #N_points = 500;
+        w_mesh = 1.5*self._width_out
+        h_mesh = 1.5*(self._height_top + self._height_bottom)
+        len_mesh = (self._length_input + self._length_taper + self._length_output)
+        #dy = w_mesh/N_points;
+        #dz = h_mesh/N_points;
+        #dx = len_mesh/N_points;
+        dx = 5e-9
+        dy = 5e-9
+        dz = 0.01e-6
+
+        ##Override mesh
+        self._env.addmesh()
+
+        self._env.set('y', 0)
+        self._env.set('y span', w_mesh)
+        self._env.set('z', (self._height_top-self._height_bottom)/2)
+        self._env.set('z span', h_mesh)
+
+        self._env.set('x', (self._length_input + self._length_taper + self._length_output)/2)
+        self._env.set('x span', len_mesh)
+
+        self._env.set('dx', dx)
+        self._env.set('dy', dy)
+        self._env.set('dz', dz)
 
 if __name__ == "__main__":
     #%%
