@@ -101,7 +101,6 @@ for data, width in zip(data_array, width_array):
         i+=1
         title =  f"$mode\; {i}$: $n_{{eff}} = {np.squeeze(mode['neff'].real):.2f}$, $f_{{TE}}={mode['te_fraction']*100:.0f}\%$"
         Analysis_wg.plot_field(ax,mode, title, y_span=3*width/1e-6, z_span=2*(height_top+height_bottom)/1e-6)
-
         draw_contour(ax,height=[height_top,height_bottom],width=width)
 
     plt.savefig(f"{PATH}{PICS}/E2/E2_{width/1e-9:.0f}.png")
