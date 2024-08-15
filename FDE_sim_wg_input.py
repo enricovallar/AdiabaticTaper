@@ -107,17 +107,21 @@ print(width_array)
 
 data_array = []
 
+#if you know the exact number of modes you can skip this
+found_modes = [1, 2, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 6, 6, 6, 6, 7, 8, 8, 8, 8, 8, 8, 8]
+
 env = lumapi.MODE()
 env.load(f"{FOLDER_PATH}{FILE_NAME}0")
 
 for i,width in enumerate(width_array):
     data = []
-    for j in range(1, found_modes[i]+1):
+    for j in range(1, found_modes[i] +1):
         
         env.load(f"{FILE_NAME}{i}")
         mode = "FDE::data::mode" + str(j)
         try:       
             extracted_data = (Analysis_wg.extract_data(env, mode))
+            print("extracted.")
         except:
             extracted_data = ({})
         finally:
@@ -126,7 +130,7 @@ for i,width in enumerate(width_array):
     data_array.append(data)
     print(f"width {width} data collected")
 
-
+#%%
 if os.path.exists(f"{SAVED_DATA_FOLDER}{DATA_FILE_NAME}"):
     os.remove(f"{SAVED_DATA_FOLDER}{DATA_FILE_NAME}")
 with open(f"{SAVED_DATA_FOLDER}{DATA_FILE_NAME}", 'wb') as file:
