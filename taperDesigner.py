@@ -23,6 +23,8 @@ class TaperDesigner:
             length_output: float = 10e-6,
             height_top: float = 313e-9,
             height_bottom: float = 350e-9, 
+            mul_w: float = 3,
+            mul_h: float = 3
     ):
         self._m_top = m_top 
         self._m_bottom = m_bottom
@@ -83,15 +85,18 @@ class TaperDesigner:
             self._env.setnamed(group_name, "x",  position_x)
         self._env.setnamed("Output Waveguide", "z", -height_bottom/2 )
 
-        self.build_simulation_region()
+        self.build_simulation_region(mul_w=mul_w, mul_h=mul_h)
         
         self.build_mesh()
     
-    def build_simulation_region(self):
+    def build_simulation_region(self,
+                                mul_w = 3,
+                                mul_h = 3
+                                ):
         #Simulation Parameters
         lam0 = 1550e-9
-        mul_w = 3 
-        mul_h = 3
+        mul_w = mul_w 
+        mul_h = mul_h
         w_EME = mul_w * self._width_out
         h_EME = mul_h * (self._height_top + self._height_bottom)
         mat_back = "SiO2 (Glass) - Palik"
