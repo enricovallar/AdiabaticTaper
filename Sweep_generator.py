@@ -16,6 +16,7 @@ from taperDesigner import TaperDesigner
 #Path to stored folder
 PATH_WIDTH = "../Sweeping_models/Width_sweep"
 PATH_HEIGHT = '../Sweeping_models/Height_sweep'
+PATH_CONVERGENCE_DATA = '../Sweeping_models'
 ratio_array = [0.5,1,1.5,2,2.5,3,3.5,4,4.5,5]
 
 
@@ -54,7 +55,27 @@ class sweep_generation:
             taper._env.close()
 
     @staticmethod
-    def 
+    def convergence_test(path: str = PATH_WIDTH,
+                         ratio_array: list = ratio_array
+                         ):
+        res = []
+        for i in range(len(ratio_array)):
+            env = lumapi.MODE()
+            env.load(f'{path}/width_sweep_{i+1}')
+            env.eval('analysis;')
+            env.emepropagate()
+
+            S = env.getresult('EME', 'user s matrix')
+
+            S21 = S[1][0]
+
+            T = np.abs(S21)**2
+            print(f'Transmission coeff for {i+1} model is {T}')
+            res.append(T)
+        plt.plot(ratio_array,res,marker='o')
+        plt.xlabel('Ratio of simulation region to the device')
+        plt.ylabel('Transmission coeffiecient')
+        plt.title('Convergence test on simulation region')
 
 #%%
 #Import Modules
@@ -73,8 +94,9 @@ from matplotlib.patches import Rectangle
 from taperDesigner import TaperDesigner
 from Sweep_generator import sweep_generation
 
-sweep_generation.width_sweep()
-sweep_generation.height_sweep()
+#sweep_generation.width_sweep()
+#sweep_generation.height_sweep()
+sweep_generation.convergence_test()
         
 
 
