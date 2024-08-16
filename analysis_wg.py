@@ -278,40 +278,88 @@ class Analysis_wg:
     @staticmethod
     def calculate_beta_factor(data_array):
         beta_array = []
+        P_y = []
+        P_z = []
         for data in data_array:
-            for i,mode in enumerate(data_array):
+            for mode in data:
                 purcell_factors_normalized = mode["purcell_factors_normalized"]
                 gamma_y = purcell_factors_normalized["gamma_y"]
                 gamma_z = purcell_factors_normalized["gamma_z"]
-                P_y.append[gamma_y]
-                P_z.append[gamma_z]
+                P_y.append(gamma_y)
+                P_z.append(gamma_z)
             
-            P1_y = P_y[0]
-            P_others_y = P_y[1:]
+            for i,Pn_y, Pn_z, mode in enumerate(zip(P_y, P_z, mode)):
+                
+                P_others_y = P_y[~i]
 
-            # Sum the arrays in P_others
-            P_sum_y = np.sum(P_others_y, axis=0)  # This sums P2 + P3 + ... + PN element-wise
+                # Sum the arrays in P_others
+                P_sum_y = np.sum(P_others_y, axis=0)  # This sums P2 + P3 + ... + PN element-wise
 
-            # Calculate B using the given formula
-            beta_y = 1 / (1 + (1 + P_sum_y) / P1_y)
+                # Calculate B using the given formula
+                beta_y = 1 / (1 + (1 + P_sum_y) / Pn_y)
 
-            P1_z = P_z[0]
-            P_others_z = P_z[1:]
+                P_others_z = P_z[~i]
 
-            # Sum the arrays in P_others
-            P_sum_z = np.sum(P_others_z, axis=0)  # This sums P2 + P3 + ... + PN element-wise
+                # Sum the arrays in P_others
+                P_sum_z = np.sum(P_others_z, axis=0)  # This sums P2 + P3 + ... + PN element-wise
 
-            # Calculate B using the given formula
-            beta_z = 1 / (1 + (1 + P_sum_z) / P1_z)
+                # Calculate B using the given formula
+                beta_z = 1 / (1 + (1 + P_sum_z) / Pn_z)
 
-            beta_dictionary = {
-                "beta_y" : beta_y,
-                "beta_z" : beta_z
-            }
-            
-            beta_array.append(beta_dictionary)
-            return beta_array
+                beta_dictionary = {
+                    "beta_y" : beta_y,
+                    "beta_z" : beta_z
+                }
+                
+                mode["beta_factors"] = beta_dictionary
+                return beta_array
 
+
+
+    @staticmethod
+    def plot_beta(ax, data, title, y_span=None, z_span=None, k="y", normalize = False):
+        """
+        Plots the electric field intensity on a given axis with customizable window size centered at zero.
+
+        Parameters:
+        - ax: The axis to plot on.
+        - data: A dictionary containing 'y', 'z', and 'E2' keys.
+        - title: The title of the plot.
+        - y_span: The width of the window in the y-direction in micrometers. Default is None (auto).
+        - z_span: The height of the window in the z-direction in micrometers. Default is None (auto).
+        """
+        # Set axis labels
+        ax.set_xlabel("y (\u00B5m)")
+        ax.set_ylabel("z (\u00B5m)")
+        
+        # Calculate limits centered at zero
+        if y_span is not None:
+            xlim = (-y_span / 2, y_span / 2)
+            ax.set_xlim(xlim)
+        
+        if z_span is not None:
+            ylim = (-z_span / 2, z_span / 2)
+            ax.set_ylim(ylim)
+        
+        
+        beta_dictionary = data[purcell_key]
+        # Plot the data
+        if normalize is True:
+            pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(purcell_dictionary[f"gamma_{k}"]), 
+                                shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=1))
+        else:
+            pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(purcell_dictionary[f"gamma_{k}"]), 
+                                shading='gouraud', cmap='jet')
+
+        
+        # Set the title
+        ax.set_title(title, fontsize=10)
+
+        # Add the colorbar
+        cbar = plt.colorbar(pcm, ax=ax)
+        cbar.set_label('Purcell factor')
+        
+        return pcm
 
 
 
