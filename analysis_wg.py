@@ -312,22 +312,13 @@ class Analysis_wg:
                 }
                 
                 mode["beta_factors"] = beta_dictionary
-                return beta_array
+                
 
 
 
     @staticmethod
     def plot_beta(ax, data, title, y_span=None, z_span=None, k="y", normalize = False):
-        """
-        Plots the electric field intensity on a given axis with customizable window size centered at zero.
-
-        Parameters:
-        - ax: The axis to plot on.
-        - data: A dictionary containing 'y', 'z', and 'E2' keys.
-        - title: The title of the plot.
-        - y_span: The width of the window in the y-direction in micrometers. Default is None (auto).
-        - z_span: The height of the window in the z-direction in micrometers. Default is None (auto).
-        """
+        
         # Set axis labels
         ax.set_xlabel("y (\u00B5m)")
         ax.set_ylabel("z (\u00B5m)")
@@ -342,13 +333,13 @@ class Analysis_wg:
             ax.set_ylim(ylim)
         
         
-        beta_dictionary = data[purcell_key]
+        beta_dictionary = data["beta_factors"]
         # Plot the data
         if normalize is True:
-            pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(purcell_dictionary[f"gamma_{k}"]), 
+            pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(beta_dictionary[f"beta_{k}"]), 
                                 shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=1))
         else:
-            pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(purcell_dictionary[f"gamma_{k}"]), 
+            pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(beta_dictionary[f"beta_{k}"]), 
                                 shading='gouraud', cmap='jet')
 
         
@@ -357,7 +348,7 @@ class Analysis_wg:
 
         # Add the colorbar
         cbar = plt.colorbar(pcm, ax=ax)
-        cbar.set_label('Purcell factor')
+        cbar.set_label('Beta')
         
         return pcm
 

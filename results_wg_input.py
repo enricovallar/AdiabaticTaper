@@ -131,12 +131,12 @@ for data, width in zip(data_array, width_array):
     #normalizing the purcell factor
     Analysis_wg.normalize_purcell_factors(data_array)
     
-    beta_array = Analysis_wg.calculate_beta_factor(data_array)
+    Analysis_wg.calculate_beta_factor(data_array)
 
     #%%
     #______________BETA
     #______________QD EMSISSION POLARIZED IN Y DIRECTION
-    for data, beta, width in zip(data_array, beta_array, width_array):
+    for data,  width in zip(data_array,  width_array):
         figure, axs = plt.subplots(2,2, constrained_layout = True, dpi = 300)
         #plt.tight_layout(rect=[0, 0, 1, 0.85])
         
@@ -152,7 +152,7 @@ for data, width in zip(data_array, width_array):
         for mode, ax in zip(data[0:4], axs.flatten()):
             i+=1
             title =  f"$mode\; {i}$: $n_{{eff}} = {np.squeeze(mode['neff'].real):.2f}$, $f_{{TE}}={mode['te_fraction']*100:.0f}\%$"
-            Analysis_wg.plot_beta(ax,mode,beta, title, y_span=3*width/1e-6, z_span=2*(height_top+height_bottom)/1e-6, k="y", normalize= normalize_)
+            Analysis_wg.plot_beta(ax,mode, title, y_span=3*width/1e-6, z_span=2*(height_top+height_bottom)/1e-6, k="y", normalize= normalize_)
         plt.savefig(f"{PATH}{PICS}/beta/beta_{width/1e-9:.0f}_y.png", dpi = 300)
         print(f"figure '{PATH}{PICS}/beta/beta_{width/1e-9:.0f}_y.png' saved")
         #plt.show()
@@ -175,7 +175,7 @@ for data, width in zip(data_array, width_array):
         for mode, ax in zip(data[0:4], axs.flatten()):
             i+=1
             title =  f"$mode\; {i}$: $n_{{eff}} = {np.squeeze(mode['neff'].real):.2f}$, $f_{{TE}}={mode['te_fraction']*100:.0f}\%$"
-            Analysis_wg.plot_beta(ax,mode, beta, title, y_span=3*width/1e-6, z_span=2*(height_top+height_bottom)/1e-6, k="z", normalize = normalize_)
+            Analysis_wg.plot_beta(ax,mode, title, y_span=3*width/1e-6, z_span=2*(height_top+height_bottom)/1e-6, k="z", normalize = normalize_)
         plt.savefig(f"{PATH}{PICS}/beta/beta_{width/1e-9:.0f}_z.png", dpi = 300)
         print(f"figure '{PATH}{PICS}/beta/beta_{width/1e-9:.0f}_z.png' saved")
         #plt.show()
