@@ -7,10 +7,17 @@ import matplotlib.pyplot as plt
 
 PATH = "../working_data/"
 DATAFILE = 'wg_input_data.pickle'
-PICS = 'wg_input_plots/'
+PICS = 'wg_input_plots'
+
+DPI = 300
 
 try:
-    os.mkdir(f"{PATH}{PICS}/E2/")
+    os.mkdir('../working_data/wg_input_plots')
+except:
+    pass
+
+try:
+    os.mkdir(f"{PATH}{PICS}/E2")
     print(f"Directory '{PATH}{PICS}/E2/' created successfully")
 except FileExistsError:
     print(f"Directory '{PATH}{PICS}/E2/' already exists")
@@ -18,12 +25,20 @@ except OSError as error:
     print(f"Error creating directory '{PATH}{PICS}/E2/': {error}")
 
 try:
-    os.mkdir(f"{PATH}{PICS}/purcell/")
+    os.mkdir(f"{PATH}{PICS}/purcell")
     print(f"Directory '{PATH}{PICS}/purcell/' created successfully")
 except FileExistsError:
     print(f"Directory '{PATH}{PICS}/purcell/' already exists")
 except OSError as error:
     print(f"Error creating directory '{PATH}{PICS}/purcell/': {error}")
+
+try:
+    os.mkdir(f"{PATH}{PICS}/beta")
+    print(f"Directory '{PATH}{PICS}/beta/' created successfully")
+except FileExistsError:
+    print(f"Directory '{PATH}{PICS}/beta/' already exists")
+except OSError as error:
+    print(f"Error creating directory '{PATH}{PICS}/beta/': {error}")
 
 
 
@@ -68,6 +83,7 @@ height_top = 313e-9
 height_bottom = 350e-9
 
 
+
 #Function to draw contour
 def draw_contour(ax,
                  height = [313e-9],
@@ -84,8 +100,7 @@ def draw_contour(ax,
     else:
         pass
       
-#%%
-
+#%%#----------------PLOT FIELD
 for data, width in zip(data_array, width_array):
     figure, axs = plt.subplots(2,2, constrained_layout = True)
     #plt.tight_layout(rect=[0, 0, 1, 0.85])
@@ -108,19 +123,31 @@ for data, width in zip(data_array, width_array):
     print(f"figure '{PATH}{PICS}/E2/E2_{width/1e-9:.0f}.png' saved")
     #plt.show()
     plt.close(figure)
+
+   
+
 #_____________________________________________________________________________________________-
 #%%
     Analysis_wg.collect_purcell(data_array)
     height_top = 313e-9
     height_bottom = 350e-9
+    normalize_ = False
 
+    #normalizing the purcell factor
+    Analysis_wg.normalize_purcell_factors(data_array)
+    
+    Analysis_wg.calculate_beta_factor(data_array)
 
-    for data, width in zip(data_array, width_array):
-        figure, axs = plt.subplots(2,2, constrained_layout = True)
+    #%%
+    #______________BETA
+    #______________QD EMSISSION POLARIZED IN Y DIRECTION
+    for data,  width in zip(data_array,  width_array):
+        figure, axs = plt.subplots(2,2, constrained_layout = True, dpi = 300)
         #plt.tight_layout(rect=[0, 0, 1, 0.85])
         
         fig_title = f"""
-            Purcell factor in $InP$ over $Si_3N_4$
+            $\\beta$-factor in $InP$ over $Si_3N_4$. 
+            QD emission polarized along y.
             $Width={width/1e-9:.0f}nm$  
     """
         
@@ -130,9 +157,93 @@ for data, width in zip(data_array, width_array):
         for mode, ax in zip(data[0:4], axs.flatten()):
             i+=1
             title =  f"$mode\; {i}$: $n_{{eff}} = {np.squeeze(mode['neff'].real):.2f}$, $f_{{TE}}={mode['te_fraction']*100:.0f}\%$"
-            Analysis_wg.plot_purcell(ax,mode, title, y_span=3*width/1e-6, z_span=2*(height_top+height_bottom)/1e-6, k="y")
-        plt.savefig(f"{PATH}{PICS}/purcell/purcell_{width/1e-9:.0f}.png")
-        print(f"figure '{PATH}{PICS}/purcell/purcell_{width/1e-9:.0f}.png' saved")
+            Analysis_wg.plot_beta(ax,mode, title, y_span=3*width/1e-6, z_span=2*(height_top+height_bottom)/1e-6, k="y", normalize= normalize_)
+        plt.savefig(f"{PATH}{PICS}/beta/beta_{width/1e-9:.0f}_y.png", dpi = 300)
+        print(f"figure '{PATH}{PICS}/beta/beta_{width/1e-9:.0f}_y.png' saved")
+        #plt.show()
+        plt.close(figure)
+
+    #______________QD EMSISSION POLARIZED IN Z DIRECTION
+    for data, width in zip(data_array, width_array):
+        figure, axs = plt.subplots(2,2, constrained_layout = True, dpi = 300)
+        #plt.tight_layout(rect=[0, 0, 1, 0.85])
+        
+        fig_title = f"""
+            $\\beta$-factor in $InP$ over $Si_3N_4$. 
+            QD emission polarized along z.
+            $Width={width/1e-9:.0f}nm$   
+    """
+        
+        figure.suptitle(fig_title, fontsize=14, fontweight="bold")
+        
+        i =0
+        for mode, ax in zip(data[0:4], axs.flatten()):
+            i+=1
+            title =  f"$mode\; {i}$: $n_{{eff}} = {np.squeeze(mode['neff'].real):.2f}$, $f_{{TE}}={mode['te_fraction']*100:.0f}\%$"
+            Analysis_wg.plot_beta(ax,mode, title, y_span=3*width/1e-6, z_span=2*(height_top+height_bottom)/1e-6, k="z", normalize = normalize_)
+        plt.savefig(f"{PATH}{PICS}/beta/beta_{width/1e-9:.0f}_z.png", dpi = 300)
+        print(f"figure '{PATH}{PICS}/beta/beta_{width/1e-9:.0f}_z.png' saved")
         #plt.show()
         plt.close(figure)
     
+
+   
+        
+    
+
+
+
+
+    #%%
+    #______________PURCELL_________________________________
+    #______________QD EMSISSION POLARIZED IN Y DIRECTION
+    for data, width in zip(data_array, width_array):
+        figure, axs = plt.subplots(2,2, constrained_layout = True, dpi = 300)
+        #plt.tight_layout(rect=[0, 0, 1, 0.85])
+        
+        fig_title = f"""
+            Purcell factor in $InP$ over $Si_3N_4$. 
+            QD emission polarized along y.
+            $Width={width/1e-9:.0f}nm$  
+    """
+        
+        figure.suptitle(fig_title, fontsize=14, fontweight="bold")
+        
+        i =0
+        for mode, ax in zip(data[0:4], axs.flatten()):
+            i+=1
+            title =  f"$mode\; {i}$: $n_{{eff}} = {np.squeeze(mode['neff'].real):.2f}$, $f_{{TE}}={mode['te_fraction']*100:.0f}\%$"
+            Analysis_wg.plot_purcell(ax,mode, title, y_span=3*width/1e-6, z_span=2*(height_top+height_bottom)/1e-6, k="y", normalize= normalize_)
+        plt.savefig(f"{PATH}{PICS}/purcell/purcell_{width/1e-9:.0f}_y.png", dpi = 300)
+        print(f"figure '{PATH}{PICS}/purcell/purcell_{width/1e-9:.0f}_y.png' saved")
+        #plt.show()
+        plt.close(figure)
+
+    #______________QD EMSISSION POLARIZED IN Z DIRECTION
+    for data, width in zip(data_array, width_array):
+        figure, axs = plt.subplots(2,2, constrained_layout = True, dpi = 300)
+        #plt.tight_layout(rect=[0, 0, 1, 0.85])
+        
+        fig_title = f"""
+            Purcell factor in $InP$ over $Si_3N_4$. 
+            QD emission polarized along z.
+            $Width={width/1e-9:.0f}nm$  
+    """
+        
+        figure.suptitle(fig_title, fontsize=14, fontweight="bold")
+        
+        i =0
+        for mode, ax in zip(data[0:4], axs.flatten()):
+            i+=1
+            title =  f"$mode\; {i}$: $n_{{eff}} = {np.squeeze(mode['neff'].real):.2f}$, $f_{{TE}}={mode['te_fraction']*100:.0f}\%$"
+            Analysis_wg.plot_purcell(ax,mode, title, y_span=3*width/1e-6, z_span=2*(height_top+height_bottom)/1e-6, k="z", normalize = normalize_)
+        plt.savefig(f"{PATH}{PICS}/purcell/purcell_{width/1e-9:.0f}_z.png", dpi = 300)
+        print(f"figure '{PATH}{PICS}/purcell/purcell_{width/1e-9:.0f}_z.png' saved")
+        #plt.show()
+        plt.close(figure)
+    
+
+   
+        
+    
+# %%

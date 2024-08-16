@@ -81,9 +81,9 @@ class Analysis_wg:
         Sz_complex = Ex * np.conj(Hy) - Ey * np.conj(Hx)
         
         # Calculate the time-averaged (real part) Poynting vector components
-        Sx_real = 0.5 * np.real(Sx_complex)
-        Sy_real = 0.5 * np.real(Sy_complex)
-        Sz_real = 0.5 * np.real(Sz_complex)
+        Sx_real = np.real(Sx_complex)
+        Sy_real = np.real(Sy_complex)
+        Sz_real = np.real(Sz_complex)
         
         # Calculate the magnitudes of the Poynting vector
         S_magnitude_complex = np.sqrt(np.abs(Sx_complex)**2 + np.abs(Sy_complex)**2 + np.abs(Sz_complex)**2)
@@ -120,7 +120,7 @@ class Analysis_wg:
         # Extract necessary components
         Ey = mode_data["Ey"]
         Ez = mode_data["Ez"]
-        Sx_complex = poynting_vector["Sx_complex"]
+        Sx = poynting_vector["Sx_real"]
         
         # Extract y and z arrays from mode_data
         y = mode_data["y"]
@@ -131,11 +131,11 @@ class Analysis_wg:
         dz = np.abs(z[1] - z[0])
         
         # Perform the integration of Sx_complex over the y-z plane
-        integrate_Sx_complex = np.sum(Sx_complex) * dy * dz
+        integrate_Sx = np.sum(Sx) * dy * dz
         
         # Calculate the Purcell factors for Ey and Ez
-        gamma_y = (np.abs(Ey)**2) / integrate_Sx_complex
-        gamma_z = (np.abs(Ez)**2) / integrate_Sx_complex
+        gamma_y = (np.abs(Ey)**2) / integrate_Sx
+        gamma_z = (np.abs(Ez)**2) / integrate_Sx
         
         # Return the dictionary
         return {"gamma_y": gamma_y, "gamma_z": gamma_z}
@@ -144,12 +144,12 @@ class Analysis_wg:
     def collect_purcell(data_array):
         for data in data_array:
             for mode in data:
-                mode["purcell factors"] = Analysis_wg.purcell_factor(mode)
+                mode["purcell_factors"] = Analysis_wg.purcell_factor(mode)
 
 
 
     @staticmethod
-    def plot_field(ax, data, title, y_span=None, z_span=None):
+    def plot_field(ax, data, title, y_span=None, z_span=None, normalize= False):
         """
         Plots the electric field intensity on a given axis with customizable window size centered at zero.
 
@@ -173,9 +173,14 @@ class Analysis_wg:
             ylim = (-z_span / 2, z_span / 2)
             ax.set_ylim(ylim)
         
-        # Plot the data
-        pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(data["E2"]), 
-                            shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=1))
+        if normalize is True:
+            # Plot the data
+            pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(data["E2"]), 
+                                shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=1))
+        else:
+            pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(data["E2"]), 
+                                shading='gouraud', cmap='jet')
+
         
         # Set the title
         ax.set_title(title, fontsize=10)
@@ -183,7 +188,7 @@ class Analysis_wg:
         return pcm
 
     @staticmethod
-    def plot_purcell(ax, data, title, y_span=None, z_span=None, k="y"):
+    def plot_purcell(ax, data, title, purcell_key = "purcell_factors_normalized", y_span=None, z_span=None, k="y", normalize = False):
         """
         Plots the electric field intensity on a given axis with customizable window size centered at zero.
 
@@ -207,14 +212,23 @@ class Analysis_wg:
             ylim = (-z_span / 2, z_span / 2)
             ax.set_ylim(ylim)
         
-        values = np.abs(data["Ey"])**2
-        purcell_dictionary = data["purcell factors"]
+        
+        purcell_dictionary = data[purcell_key]
         # Plot the data
-        pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(values), 
-                            shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=1))
+        if normalize is True:
+            pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(purcell_dictionary[f"gamma_{k}"]), 
+                                shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=1))
+        else:
+            pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(purcell_dictionary[f"gamma_{k}"]), 
+                                shading='gouraud', cmap='jet')
+
         
         # Set the title
         ax.set_title(title, fontsize=10)
+
+        # Add the colorbar
+        cbar = plt.colorbar(pcm, ax=ax)
+        cbar.set_label('Purcell factor')
         
         return pcm
 
@@ -236,7 +250,116 @@ class Analysis_wg:
         plt.title(f"{title}\n{subtitle}" if subtitle else title)
         
     
-   
+    @staticmethod
+    def normalize_purcell_factors(data_array):
+        purcell_max_y = 0
+        purcell_max_z = 0
+        for data in data_array:
+            for mode in data: 
+                purcell_factors = mode["purcell_factors"]
+                if np.max(purcell_factors["gamma_y"]) > purcell_max_y:
+                    purcell_max_y = np.max(purcell_factors["gamma_y"])
+                if np.max(purcell_factors["gamma_z"]) > purcell_max_z:
+                    purcell_max_z = np.max(purcell_factors["gamma_z"])
+        purcell_max = np.max([purcell_max_y,purcell_max_y])
+
+        for data in data_array: 
+            for mode in data: 
+                purcell_factors = mode["purcell_factors"]
+                gamma_y_normalized = purcell_factors["gamma_y"]/purcell_max
+                gamma_z_normalized = purcell_factors["gamma_z"]/purcell_max
+                purcell_factors_normalized = {
+                    "gamma_y" : gamma_y_normalized,
+                    "gamma_z" : gamma_z_normalized
+                }
+                mode["purcell_factors_normalized"] = purcell_factors_normalized
+
+
+    @staticmethod
+    def calculate_beta_factor(data_array):
+        beta_array = []
+        P_y = []
+        P_z = []
+        for data in data_array:
+            for mode in data:
+                purcell_factors_normalized = mode["purcell_factors_normalized"]
+                gamma_y = purcell_factors_normalized["gamma_y"]
+                gamma_z = purcell_factors_normalized["gamma_z"]
+                P_y.append(gamma_y)
+                P_z.append(gamma_z)
+            
+            for i,(Pn_y, Pn_z, mode) in enumerate(zip(P_y, P_z, data)):
+                
+                P_others_y = P_y[~i]
+
+                # Sum the arrays in P_others
+                P_sum_y = np.sum(P_others_y, axis=0)  # This sums P2 + P3 + ... + PN element-wise
+
+                # Calculate B using the given formula
+                beta_y = 1 / (1 + (1 + P_sum_y) / Pn_y)
+
+                P_others_z = P_z[~i]
+
+                # Sum the arrays in P_others
+                P_sum_z = np.sum(P_others_z, axis=0)  # This sums P2 + P3 + ... + PN element-wise
+
+                # Calculate B using the given formula
+                beta_z = 1 / (1 + (1 + P_sum_z) / Pn_z)
+
+                beta_dictionary = {
+                    "beta_y" : beta_y,
+                    "beta_z" : beta_z
+                }
+                
+                mode["beta_factors"] = beta_dictionary
+                
+
+
+
+    @staticmethod
+    def plot_beta(ax, data, title, y_span=None, z_span=None, k="y", normalize = False):
+        
+        # Set axis labels
+        ax.set_xlabel("y (\u00B5m)")
+        ax.set_ylabel("z (\u00B5m)")
+        
+        # Calculate limits centered at zero
+        if y_span is not None:
+            xlim = (-y_span / 2, y_span / 2)
+            ax.set_xlim(xlim)
+        
+        if z_span is not None:
+            ylim = (-z_span / 2, z_span / 2)
+            ax.set_ylim(ylim)
+        
+        
+        beta_dictionary = data["beta_factors"]
+        # Plot the data
+        if normalize is True:
+            pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(beta_dictionary[f"beta_{k}"]), 
+                                shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=1))
+        else:
+            pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(beta_dictionary[f"beta_{k}"]), 
+                                shading='gouraud', cmap='jet')
+
+        
+        # Set the title
+        ax.set_title(title, fontsize=10)
+
+        # Add the colorbar
+        cbar = plt.colorbar(pcm, ax=ax)
+        cbar.set_label('Beta')
+        
+        return pcm
+
+
+
+            
+            
+            
+
+            
+                
 
 
 
