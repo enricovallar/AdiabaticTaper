@@ -14,8 +14,8 @@ from matplotlib.patches import Rectangle
 from taperDesigner import TaperDesigner
 
 #Path to stored folder
-PATH_WIDTH = "../Sweeping_models/Width_sweep"
-PATH_HEIGHT = '../Sweeping_models/Height_sweep'
+PATH_WIDTH = "../Sweeping_models/Sim_width"
+PATH_HEIGHT = '../Sweeping_models/Sim_height'
 PATH_CONVERGENCE_DATA = '../Sweeping_models'
 ratio_array = [0.5,1,1.5,2,2.5,3,3.5,4,4.5,5]
 
@@ -33,25 +33,25 @@ except:
 class sweep_generation:
 
     @staticmethod
-    def width_sweep(path: str = PATH_WIDTH,
+    def sim_width(path: str = PATH_WIDTH,
                     ratio_array: list = ratio_array
                     ):
         for i in range(len(ratio_array)):
             env = lumapi.MODE()
             taper = TaperDesigner(env, mul_w = ratio_array[i])
             print(f"Saving model {i+1}...")
-            taper._env.save(f'{path}/width_sweep_{i+1}')
+            taper._env.save(f'{path}/sim_width_{i+1}')
             taper._env.close()
     
     @staticmethod
-    def height_sweep(path: str = PATH_HEIGHT,
+    def sim_height(path: str = PATH_HEIGHT,
                      ratio_array: list = ratio_array
                      ):
         for i in range(len(ratio_array)):
             env = lumapi.MODE()
             taper = TaperDesigner(env, mul_h = ratio_array[i])
             print(f"Saving model {i+1}...")
-            taper._env.save(f'{path}/height_sweep_{i+1}')
+            taper._env.save(f'{path}/sim_height_{i+1}')
             taper._env.close()
 
     @staticmethod
@@ -61,7 +61,7 @@ class sweep_generation:
         res = []
         for i in range(len(ratio_array)):
             env = lumapi.MODE()
-            env.load(f'{path}/width_sweep_{i+1}')
+            env.load(f'{path}/sim_width_{i+1}')
             env.eval('analysis;')
             env.emepropagate()
 
@@ -94,9 +94,9 @@ from matplotlib.patches import Rectangle
 from taperDesigner import TaperDesigner
 from Sweep_generator import sweep_generation
 
-#sweep_generation.width_sweep()
-#sweep_generation.height_sweep()
-sweep_generation.convergence_test()
+sweep_generation.sim_width()
+sweep_generation.sim_height()
+#sweep_generation.convergence_test()
         
 
 
