@@ -23,6 +23,14 @@ class TaperDesigner:
             length_output: float = 10e-6,
             height_top: float = 313e-9,
             height_bottom: float = 350e-9, 
+            mul_w: float = 3,
+            mul_h: float = 3,
+            cell_number: int = 30,
+            mul_w_mesh: float = 1.5,
+            mul_h_mesh: float = 1.5,
+            dx: float = 5e-9,
+            dy: float = 5e-9,
+            dz: float = 0.01e-6
     ):
         self._m_top = m_top 
         self._m_bottom = m_bottom
@@ -83,15 +91,21 @@ class TaperDesigner:
             self._env.setnamed(group_name, "x",  position_x)
         self._env.setnamed("Output Waveguide", "z", -height_bottom/2 )
 
-        self.build_simulation_region()
+        self.build_simulation_region(mul_w=mul_w, mul_h=mul_h, cell_number=cell_number)
         
-        self.build_mesh()
+        self.build_mesh(mul_h_mesh=mul_h_mesh, mul_w_mesh=mul_w_mesh, dx=dx, dy=dy, dz=dz)
+
+        self.build_monitors(mul_h_mesh=mul_h_mesh,mul_w=mul_w)
     
-    def build_simulation_region(self):
+    def build_simulation_region(self,
+                                mul_w = 3,
+                                mul_h = 3,
+                                cell_number = 30
+                                ):
         #Simulation Parameters
         lam0 = 1550e-9
-        mul_w = 3 
-        mul_h = 3
+        mul_w = mul_w 
+        mul_h = mul_h
         w_EME = mul_w * self._width_out
         h_EME = mul_h * (self._height_top + self._height_bottom)
         mat_back = "SiO2 (Glass) - Palik"
@@ -121,7 +135,7 @@ class TaperDesigner:
         self._env.set('number of cell groups', 3)
         self._env.set('group spans',np.array([x_pen, self._length_taper, x_pen]))
 
-        self._env.set('cells',np.array([1,30,1]))
+        self._env.set('cells',np.array([1,cell_number,1]))
         self._env.set('subcell method',np.array([0,1,0]))   # 0 = None, 1 = CVCS
 
         self._env.set('display cells', 1)
@@ -145,18 +159,24 @@ class TaperDesigner:
         self._env.set('z span', h_EME)
         self._env.set('mode selection', 'fundamental TE mode')
 
-    def build_mesh(self):
+    def build_mesh(self,
+                   mul_w_mesh: float = 1.5,
+                   mul_h_mesh: float = 1.5,
+                   dx: float = 5e-9,
+                   dy: float = 5e-9,
+                   dz: float = 0.01e-6
+                   ):
         #Mesh parameters
         #N_points = 500;
-        w_mesh = 1.5*self._width_out
-        h_mesh = 1.5*(self._height_top + self._height_bottom)
+        w_mesh = mul_w_mesh*self._width_out
+        h_mesh = mul_h_mesh*(self._height_top + self._height_bottom)
         len_mesh = (self._length_input + self._length_taper + self._length_output)
         #dy = w_mesh/N_points;
         #dz = h_mesh/N_points;
         #dx = len_mesh/N_points;
-        dx = 5e-9
-        dy = 5e-9
-        dz = 0.01e-6
+        dx = dx
+        dy = dy
+        dz = dz
 
         ##Override mesh
         self._env.addmesh()
@@ -172,6 +192,105 @@ class TaperDesigner:
         self._env.set('dx', dx)
         self._env.set('dy', dy)
         self._env.set('dz', dz)
+
+    def build_monitors(self,
+                       mul_w: float = 3,
+                       mul_h_mesh: float = 1.5
+                        ):
+        #parameters
+        w_EME = mul_w * self._width_out
+        h_InP = self._height_top
+        h_SiN = self._height_bottom
+        h_mesh = mul_h_mesh*(self._height_top + self._height_bottom)
+        len_InP = self._length_input
+        len_SiN = self._length_output
+        len_taper = self._length_taper
+        len_mesh = (self._length_input + self._length_taper + self._length_output)
+
+        #--InP
+        #Field propfile
+        self._env.addemeprofile()
+        self._env.set("name", "monitor_field_InP")
+        self._env.set("y",0)
+
+        self._env.set("y span",w_EME*1.3)
+
+        self._env.set("z",h_InP/2)
+
+        self._env.set("x", (len_InP+len_SiN+len_taper)/2)
+        self._env.set("x span", len_mesh*1.3)
+
+
+        #index propfile
+        self._env.addemeindex()
+        self._env.set("name", "monitor_index_InP")
+        self._env.set("y",0)
+
+        self._env.set("y span",w_EME*1.3)
+
+        self._env.set("z",h_InP/2)
+
+        self._env.set("x", (len_InP+len_SiN+len_taper)/2)
+        self._env.set("x span", len_mesh*1.3)
+
+
+
+
+        #--SiN
+        #Field propfile
+        self._env.addemeprofile()
+        self._env.set("name", "monitor_field_SiN")
+        self._env.set("y",0)
+
+        self._env.set("y span",w_EME*1.3)
+
+        self._env.set("z", -h_SiN/2)
+
+        self._env.set("x", (len_InP+len_SiN+len_taper)/2)
+        self._env.set("x span", len_mesh*1.3)
+
+
+        #index propfile
+        self._env.addemeindex()
+        self._env.set("name", "monitor_index_SiN")
+        self._env.set("y",0)
+
+        self._env.set("y span",w_EME*1.3)
+
+        self._env.set("z",-h_SiN/2)
+
+        self._env.set("x", (len_InP+len_SiN+len_taper)/2)
+        self._env.set("x span", len_mesh*1.3)
+
+
+
+
+
+        #--y=0
+        #Field propfile
+        self._env.addemeprofile()
+        self._env.set("name", "monitor_field_y0")
+        self._env.set("monitor type", "2D Y-normal")
+        self._env.set("y",0)
+
+        self._env.set("z", 0)
+        self._env.set("z span", h_mesh*1.3)
+
+        self._env.set("x", (len_InP+len_SiN+len_taper)/2)
+        self._env.set("x span", len_mesh*1.3)
+
+
+        #index propfile
+        self._env.addemeindex()
+        self._env.set("name", "monitor_index_y0")
+        self._env.set("monitor type", "2D Y-normal")
+        self._env.set("y",0)
+
+        self._env.set("z", 0)
+        self._env.set("z span", h_mesh*1.3)
+
+        self._env.set("x", (len_InP+len_SiN+len_taper)/2)
+        self._env.set("x span", len_mesh*1.3)
 
 if __name__ == "__main__":
     #%%
