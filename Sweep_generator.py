@@ -39,8 +39,8 @@ class sweep_generation:
         for i in range(len(ratio_array)):
             env = lumapi.MODE()
             taper = TaperDesigner(env, mul_w = ratio_array[i])
-            print(f"Saving model {i+1}...")
-            taper._env.save(f'{path}/sim_width_{i+1}')
+            print(f"Saving model {i}...")
+            taper._env.save(f'{path}/sim_width_{i}')
             taper._env.close()
     
     @staticmethod
@@ -50,8 +50,8 @@ class sweep_generation:
         for i in range(len(ratio_array)):
             env = lumapi.MODE()
             taper = TaperDesigner(env, mul_h = ratio_array[i])
-            print(f"Saving model {i+1}...")
-            taper._env.save(f'{path}/sim_height_{i+1}')
+            print(f"Saving model {i}...")
+            taper._env.save(f'{path}/sim_height_{i}')
             taper._env.close()
 
     @staticmethod
@@ -61,7 +61,7 @@ class sweep_generation:
         res = []
         for i in range(len(ratio_array)):
             env = lumapi.MODE()
-            env.load(f'{path}/sim_width_{i+1}')
+            env.load(f'{path}/sim_width_{i}')
             env.eval('analysis;')
             env.emepropagate()
 
@@ -70,7 +70,7 @@ class sweep_generation:
             S21 = S[1][0]
 
             T = np.abs(S21)**2
-            print(f'Transmission coeff for {i+1} model is {T}')
+            print(f'Transmission coeff for {i} model is {T}')
             res.append(T)
         plt.plot(ratio_array,res,marker='o')
         plt.xlabel('Ratio of simulation region to the device')
