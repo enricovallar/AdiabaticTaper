@@ -184,7 +184,7 @@ class GeomBuilder(LumObj):
     set("material", mat);
 
 '''
-        print(f"script variable is of type {type(script_taper_in)}\n Script is: {script_taper_in}")
+        #print(f"script variable is of type {type(script_taper_in)}\n Script is: {script_taper_in}")
         
 
         #Taper
