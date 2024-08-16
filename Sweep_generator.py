@@ -36,12 +36,13 @@ class sweep_generation:
     def sim_width(path: str = PATH_WIDTH,
                     ratio_array: list = ratio_array
                     ):
+        env = lumapi.MODE()
+        env.save(f'{path}/sim_width_{i}')
         for i in range(len(ratio_array)):
-            env = lumapi.MODE()
             taper = TaperDesigner(env, mul_w = ratio_array[i])
-            print(f"Saving model {i+1}...")
-            taper._env.save(f'{path}/sim_width_{i+1}')
-            taper._env.close()
+            print(f"Saving model {i}...")
+            taper._env.save(f'sim_width_{i+1}')
+        taper._env.close()
     
     @staticmethod
     def sim_height(path: str = PATH_HEIGHT,

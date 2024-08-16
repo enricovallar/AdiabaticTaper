@@ -84,7 +84,8 @@ def draw_contour(ax,
     else:
         pass
       
-      
+#%%
+
 for data, width in zip(data_array, width_array):
     figure, axs = plt.subplots(2,2, constrained_layout = True)
     #plt.tight_layout(rect=[0, 0, 1, 0.85])
