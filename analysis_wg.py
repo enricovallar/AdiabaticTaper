@@ -278,9 +278,9 @@ class Analysis_wg:
     @staticmethod
     def calculate_beta_factor(data_array):
         beta_array = []
-        P_y = []
-        P_z = []
         for data in data_array:
+            P_y = []
+            P_z = []
             for mode in data:
                 purcell_factors_normalized = mode["purcell_factors_normalized"]
                 gamma_y = purcell_factors_normalized["gamma_y"]
@@ -290,7 +290,7 @@ class Analysis_wg:
             
             for i,(Pn_y, Pn_z, mode) in enumerate(zip(P_y, P_z, data)):
                 
-                P_others_y = P_y[~i]
+                P_others_y = P_y[:i] + P_y[i+1:]
 
                 # Sum the arrays in P_others
                 P_sum_y = np.sum(P_others_y, axis=0)  # This sums P2 + P3 + ... + PN element-wise
@@ -298,7 +298,7 @@ class Analysis_wg:
                 # Calculate B using the given formula
                 beta_y = 1 / (1 + (1 + P_sum_y) / Pn_y)
 
-                P_others_z = P_z[~i]
+                P_others_z = P_z[:i] + P_z[i+1:]
 
                 # Sum the arrays in P_others
                 P_sum_z = np.sum(P_others_z, axis=0)  # This sums P2 + P3 + ... + PN element-wise
@@ -317,7 +317,7 @@ class Analysis_wg:
 
 
     @staticmethod
-    def plot_beta(ax, data, title, y_span=None, z_span=None, k="y", normalize = False):
+    def plot_beta(ax, data, title, y_span=None, z_span=None, k="y", normalize = True):
         
         # Set axis labels
         ax.set_xlabel("y (\u00B5m)")
@@ -337,7 +337,7 @@ class Analysis_wg:
         # Plot the data
         if normalize is True:
             pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(beta_dictionary[f"beta_{k}"]), 
-                                shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=1))
+                                shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=0.5))
         else:
             pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(beta_dictionary[f"beta_{k}"]), 
                                 shading='gouraud', cmap='jet')

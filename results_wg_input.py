@@ -41,16 +41,43 @@ except OSError as error:
     print(f"Error creating directory '{PATH}{PICS}/beta/': {error}")
 
 
-
+#Function to draw contour
+def draw_contour(ax,
+                 height = [313e-9],
+                 width = 550e-9
+                 ):
+    for h in height:
+        height[height.index(h)]=h/1e-6
+    width=width/1e-6
+    if len(height)==1:
+        ax.add_patch(Rectangle((-width/2,-height[0]/2),width,height[0],fill=None))
+    elif len(height)==2:
+        ax.add_patch(Rectangle((-width/2,0),width,height[0],fill=None))
+        ax.add_patch(Rectangle((-width/2,-height[1]),width,height[1],fill=None))
+    else:
+        pass
 
 
 
 with open(f"{PATH}{DATAFILE}", 'rb') as file:
     loaded_data = pickle.load(file)
+    file.close()
 
 width_array = loaded_data["width_array"]
 found_modes = loaded_data["found_modes"]
 data_array  = loaded_data["data_array"]
+
+Analysis_wg.collect_purcell(data_array)
+Analysis_wg.normalize_purcell_factors(data_array)
+Analysis_wg.calculate_beta_factor(data_array)
+
+
+with open(f"{PATH}{DATAFILE}", 'wb') as file:
+    pickle.dump({"data_array": data_array,
+                 "found_modes": found_modes,
+                 "width_array": width_array}, file)
+    file.close()
+
 
 #%%
 #--------------EFFECTIVE INDEX---------------------------------------------
@@ -83,23 +110,6 @@ height_top = 313e-9
 height_bottom = 350e-9
 
 
-
-#Function to draw contour
-def draw_contour(ax,
-                 height = [313e-9],
-                 width = 550e-9
-                 ):
-    for h in height:
-        height[height.index(h)]=h/1e-6
-    width=width/1e-6
-    if len(height)==1:
-        ax.add_patch(Rectangle((-width/2,-height[0]/2),width,height[0],fill=None))
-    elif len(height)==2:
-        ax.add_patch(Rectangle((-width/2,0),width,height[0],fill=None))
-        ax.add_patch(Rectangle((-width/2,-height[1]),width,height[1],fill=None))
-    else:
-        pass
-      
 #%%#----------------PLOT FIELD
 for data, width in zip(data_array, width_array):
     figure, axs = plt.subplots(2,2, constrained_layout = True)
@@ -128,15 +138,13 @@ for data, width in zip(data_array, width_array):
 
 #_____________________________________________________________________________________________-
 #%%
-    Analysis_wg.collect_purcell(data_array)
+
+    
+    
     height_top = 313e-9
     height_bottom = 350e-9
-    normalize_ = False
+    normalize_ = True
 
-    #normalizing the purcell factor
-    Analysis_wg.normalize_purcell_factors(data_array)
-    
-    Analysis_wg.calculate_beta_factor(data_array)
 
     #%%
     #______________BETA
@@ -186,7 +194,7 @@ for data, width in zip(data_array, width_array):
         #plt.show()
         plt.close(figure)
     
-
+    
    
         
     
