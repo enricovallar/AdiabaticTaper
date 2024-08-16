@@ -288,7 +288,7 @@ class Analysis_wg:
                 P_y.append(gamma_y)
                 P_z.append(gamma_z)
             
-            for i,Pn_y, Pn_z, mode in enumerate(zip(P_y, P_z, mode)):
+            for i,(Pn_y, Pn_z, mode) in enumerate(zip(P_y, P_z, data)):
                 
                 P_others_y = P_y[~i]
 

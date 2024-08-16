@@ -7,12 +7,17 @@ import matplotlib.pyplot as plt
 
 PATH = "../working_data/"
 DATAFILE = 'wg_input_data.pickle'
-PICS = 'wg_input_plots/'
+PICS = 'wg_input_plots'
 
 DPI = 300
 
 try:
-    os.mkdir(f"{PATH}{PICS}/E2/")
+    os.mkdir('../working_data/wg_input_plots')
+except:
+    pass
+
+try:
+    os.mkdir(f"{PATH}{PICS}/E2")
     print(f"Directory '{PATH}{PICS}/E2/' created successfully")
 except FileExistsError:
     print(f"Directory '{PATH}{PICS}/E2/' already exists")
@@ -20,7 +25,7 @@ except OSError as error:
     print(f"Error creating directory '{PATH}{PICS}/E2/': {error}")
 
 try:
-    os.mkdir(f"{PATH}{PICS}/purcell/")
+    os.mkdir(f"{PATH}{PICS}/purcell")
     print(f"Directory '{PATH}{PICS}/purcell/' created successfully")
 except FileExistsError:
     print(f"Directory '{PATH}{PICS}/purcell/' already exists")
@@ -28,7 +33,7 @@ except OSError as error:
     print(f"Error creating directory '{PATH}{PICS}/purcell/': {error}")
 
 try:
-    os.mkdir(f"{PATH}{PICS}/beta/")
+    os.mkdir(f"{PATH}{PICS}/beta")
     print(f"Directory '{PATH}{PICS}/beta/' created successfully")
 except FileExistsError:
     print(f"Directory '{PATH}{PICS}/beta/' already exists")
