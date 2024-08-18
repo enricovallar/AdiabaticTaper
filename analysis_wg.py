@@ -630,6 +630,8 @@ class Analysis_wg:
         if normalize:
             beta_gradients = mode["beta_gradients_normalized"]
             width = mode["width"]/1e-6
+            ylim =(-1,1)
+            ax.set_ylim(ylim)
         else: 
             beta_gradients = mode["beta_gradients"]
             ylim = (-mode["beta_gradients_normalized"]["max_gradient"],
@@ -652,11 +654,11 @@ class Analysis_wg:
             label = f"Gradient of beta_z (z = {z_position * 1e6:.2f} µm)"
         
         # Plot the gradient
-        ax.plot(y, gradient, color=color, label=label)
+        line, = ax.plot(y, gradient,"--" ,  color=color, label=label)
 
         # Set axis labels and title
         ax.set_xlabel("y (µm)")
-        ax.set_ylabel("Gradient of Beta")
+        ax.set_ylabel("Gradient of $\\beta$")
         if title:
             ax.set_title(title)
         
@@ -670,6 +672,7 @@ class Analysis_wg:
 
         #ax.legend()
         ax.grid(True)
+        return line
 
     @staticmethod
     def calculate_beta_gradient(data_array, z_):
@@ -712,3 +715,60 @@ class Analysis_wg:
                     "z_index": z_index,
                     "z_value": z[z_index]
                 }
+
+
+    @staticmethod
+    def plot_beta_at_z(z_, ax, mode):
+        """
+        Plots the values of beta_y or beta_z at a specific value of z = z_ on the right y-axis.
+        Plots beta_y if TE fraction > 0.5, otherwise plots beta_z.
+
+        Parameters:
+        - z_ (float): The specific z position (in meters) at which to plot the beta values.
+        - ax: The matplotlib axis on which to plot the data. This will be the left axis, and a new right axis will be created.
+        - mode: A dictionary containing the mode data, including 'y', 'z', and 'beta_factors'.
+
+        Returns:
+        - None: The function directly plots on the provided axis.
+        """
+        
+        # Create a secondary y-axis on the right
+        ax_right = ax.twinx()
+
+        # Extract the beta factors and spatial coordinates
+        y = mode["y"] * 1e6  # Convert y to micrometers
+        z = mode["z"]
+        beta_y = mode["beta_factors"]["beta_y"]
+        beta_z = mode["beta_factors"]["beta_z"]
+        
+        # Find the index closest to the specified z_ value
+        z_index = (np.abs(z - z_)).argmin()
+        
+        # Determine which beta factor to plot based on the TE fraction
+        if mode["te_fraction"] > 0.5:
+            beta_values = beta_y[:, z_index]
+            color = 'red'
+            label = f"beta_y at z = {z_ * 1e6:.2f} µm"
+        else:
+            beta_values = beta_z[:, z_index]
+            color = 'blue'
+            label = f"beta_z at z = {z_ * 1e6:.2f} µm"
+        
+        # Plot the beta values along the y-axis at z = z_ on the right y-axis
+        line, = ax_right.plot(y, beta_values, color=color, label=label)
+        
+        # Set axis labels and title
+        ax.set_xlabel("y (µm)")
+        ax.set_title(f"$\\beta$-factor z = {z_ * 1e6:.2f} µm")
+        
+        ax_right.set_ylabel("$\\beta$-factor", color=color)
+        ax_right.tick_params(axis='y', labelcolor=color)
+        
+        # Add legend and grid
+        #ax_right.legend()
+        ax_right.grid(True)
+
+        ax_right.set_ylim((0,0.5))
+        return line
+
+   

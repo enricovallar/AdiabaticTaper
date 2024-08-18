@@ -85,6 +85,7 @@ with open(f"{PATH}{DATAFILE}", 'wb') as file:
     file.close()
 
 
+
 #%%
 # ________PLOT EFFECTIVE INDICES___________________________________________
 title = "Effective index"
@@ -181,7 +182,7 @@ for data,  width in zip(data_array,  width_array):
     
     
     fig_title = f"""
-        $\\beta$-factor gradient in $InP$ over $Si_3N_4$. 
+        $\\beta$-factor and its gradient in $InP$ over $Si_3N_4$. 
         $Width={width/1e-9:.0f}nm$  
 """
     
@@ -191,11 +192,19 @@ for data,  width in zip(data_array,  width_array):
     for mode, ax in zip(data[0:4], axs.flatten()):
         i+=1
         title =  f"$mode\; {i}$: $n_{{eff}} = {np.squeeze(mode['neff'].real):.2f}$, $f_{{TE}}={mode['te_fraction']*100:.0f}\%$"
-        Analysis_wg.plot_beta_gradient(ax, mode, 
+        line1 = Analysis_wg.plot_beta_gradient(ax, mode, 
                                        z_position=height_top/2,
                                        title = title,
-                                       normalize=False, 
+                                       normalize=True, 
                                        xlim = (-0.1,0.1))
+
+        line2 = Analysis_wg.plot_beta_at_z(height_top/2, ax, mode)
+        
+        lines = [line1, line2]
+        labels = [line.get_label() for line in lines]
+        ax.legend(lines, labels, loc=0)
+
+
     plt.savefig(f"{PATH}{PICS}/beta_gradient/gradient_{width/1e-9:.0f}.png", dpi = 300)
     print(f"figure '{PATH}{PICS}/beta_gradient/beta_gradient_{width/1e-9:.0f}.png' saved")
     #plt.show()
