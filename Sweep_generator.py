@@ -198,14 +198,14 @@ if __name__=='__main__':
     sim_size_ratio_FOTONANO_2 = [1.75,2,2.25,2.5,2.75,3,3.25,3.5,3.75,4,4.25,4.5,4.75,5,5.25,5.5,5.75,6,6.25,6.5,6.75,7,7.25,7.5,7.75,8,8.25,8.5,8.75,9]
     PATH_FOTONANO_2 = '../Sweeping_models/Sim_width_FOTONANO_2'
 
-    sweep_generation.sim_width(path=PATH_FOTONANO_2, ratio_array=sim_size_ratio_FOTONANO_2)
+    #sweep_generation.sim_width(path=PATH_FOTONANO_2, ratio_array=sim_size_ratio_FOTONANO_2)
     #sweep_generation.sim_height()
     #sweep_generation.cell_number()
     #sweep_generation.mesh_height()
     #sweep_generation.mesh_width()
     #sweep_generation.mesh_resolution_height()
     #sweep_generation.mesh_resolution_width()
-    #sweep_generation.convergence_test(path=PATH_FOTONANO_2, ratio_array=sim_size_ratio_FOTONANO_2)
+    sweep_generation.convergence_test(path=PATH_FOTONANO_2, ratio_array=sim_size_ratio_FOTONANO_2)
 
             
 
