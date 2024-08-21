@@ -26,6 +26,8 @@ sim_size_ratio = [0.5,1,1.5,2,2.5,3,3.5,4,4.5,5]
 cell_number = [5,10,15,20,25,30,35,40,45,50]
 mesh_size_ratio = [1,1.2,1.4,1.6,1.8,2,2.2,2.4,2.6,2.8,3]
 mesh_resolution = [5e-9,10e-9,15e-9,20e-9,25e-9,30e-9,35e-9,40e-9,45e-9,50e-9]
+sim_size_ratio_FOTONANO_2 = [1.75,2,2.25,2.5,2.75,3,3.25,3.5,3.75,4,4.25,4.5,4.75,5,5.25,5.5,5.75,6,6.25,6.5,6.75,7,7.25,7.5,7.75,8,8.25,8.5,8.75,9]
+PATH_FOTONANO_2 = '../Sweeping_models/Sim_width_FOTONANO_2'
 
 #Create directories
 try:
@@ -67,22 +69,22 @@ class sweep_generation:
         env = lumapi.MODE()
         env.save(f'{path}/sim_width_0')
         for i in range(len(ratio_array)):
-            taper = TaperDesigner(env, mul_w = ratio_array[i])
-            print(f"Saving model {i+1} with simulation width ratio {ratio_array[i]}")
-            taper._env.save(f'sim_width_{i+1}')
+            taper = TaperDesigner(env, mul_h=4, width_in=400e-9, width_out=1e-6, mul_w = ratio_array[i], dz=5e-9, dy=5e-9)
+            print(f"Saving model {i} with simulation width ratio {ratio_array[i]}")
+            taper._env.save(f'sim_width_{i}')
             taper._env.deleteall()
         env.close()
     
     @staticmethod
-    def sim_height(path: str = PATH_HEIGHT,
-                     ratio_array: list = sim_size_ratio
+    def sim_height(path: str = '../Sweeping_models/Sim_height_FOTONANO',
+                     ratio_array: list = sim_size_ratio_FOTONANO_2
                      ):
         env = lumapi.MODE()
         env.save(f'{path}/sim_height_0')
         for i in range(len(ratio_array)):
-            taper = TaperDesigner(env, mul_h = ratio_array[i])
-            print(f"Saving model {i+1} with simulation height ratio {ratio_array[i]}")
-            taper._env.save(f'sim_height_{i+1}')
+            taper = TaperDesigner(env, width_in=400e-9, width_out=1e-6, mul_w=4, mul_h = ratio_array[i], dx=20e-9, dy=20e-9)
+            print(f"Saving model {i} with simulation height ratio {ratio_array[i]}")
+            taper._env.save(f'sim_height_{i}')
             taper._env.deleteall()
         env.close()
 
@@ -157,10 +159,11 @@ class sweep_generation:
                          ratio_array: list = sim_size_ratio
                          ):
         res = []
-        for i in range(len(ratio_array)):
+        for i in range(2,len(ratio_array)):
             env = lumapi.MODE()
-            env.load(f'{path}/sim_width_{i+1}')
+            env.load(f'{path}/sim_width_{i}')
             env.eval('analysis;')
+            env.run()
             env.emepropagate()
 
             S = env.getresult('EME', 'user s matrix')
@@ -168,7 +171,7 @@ class sweep_generation:
             S21 = S[1][0]
 
             T = np.abs(S21)**2
-            print(f'Transmission coeff for {i+1} model is {T}')
+            print(f'Transmission coeff for {i} model is {T}')
             res.append(T)
         plt.plot(ratio_array,res,marker='o')
         plt.xlabel('Ratio of simulation region to the device')
@@ -192,15 +195,18 @@ if __name__=='__main__':
     from matplotlib.patches import Rectangle
     from taperDesigner import TaperDesigner
     from Sweep_generator import sweep_generation
+    sim_size_ratio_FOTONANO_2 = [1.75,2,2.25,2.5,2.75,3,3.25,3.5,3.75,4,4.25,4.5,4.75,5,5.25,5.5,5.75,6,6.25,6.5,6.75,7,7.25,7.5,7.75,8,8.25,8.5,8.75,9]
+    PATH_FOTONANO_2 = '../Sweeping_models/Sim_width_FOTONANO_2'
 
-    #sweep_generation.sim_width()
+    sweep_generation.sim_width(path=PATH_FOTONANO_2, ratio_array=sim_size_ratio_FOTONANO_2)
     #sweep_generation.sim_height()
     #sweep_generation.cell_number()
-    sweep_generation.mesh_height()
-    sweep_generation.mesh_width()
+    #sweep_generation.mesh_height()
+    #sweep_generation.mesh_width()
     #sweep_generation.mesh_resolution_height()
     #sweep_generation.mesh_resolution_width()
-    #sweep_generation.convergence_test()
+    #sweep_generation.convergence_test(path=PATH_FOTONANO_2, ratio_array=sim_size_ratio_FOTONANO_2)
+
             
 
 
