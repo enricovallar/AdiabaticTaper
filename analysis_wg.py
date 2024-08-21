@@ -760,4 +760,17 @@ class Analysis_wg:
         ax_right.set_ylim((0,1))
         return line
 
+
+
+    @staticmethod
+    def get_beta_at_position(mode, y0, z0):
+        y = mode["y"] * 1e6  # Convert y to micrometers
+        z = mode["z"]
+        beta_y = mode["beta_factors"]["beta_y"]
+        beta_z = mode["beta_factors"]["beta_z"]
+        
+    
+
+
+
    
