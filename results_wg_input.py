@@ -65,14 +65,15 @@ normalize_ = True
 
 #%%
 # ______CALCULATE BETA FACTOR_____________________________________
-Analysis_wg.collect_purcell(data_array)
-Analysis_wg.normalize_purcell_factors(data_array)
+
+
+Analysis_wg.collect_purcell(data_array, lam0= 1550e-9)
 Analysis_wg.calculate_beta_factor(data_array)
 Analysis_wg.integrate_beta_in_region(data_array,
                                     y_0=0,
                                     z_0=height_top/2,
-                                    y_span = 50e-9,
-                                    z_span = 50e-9) 
+                                    y_span = 60e-9,
+                                    z_span = 60e-9) 
 Analysis_wg.normalize_beta_integrals(data_array)
 Analysis_wg.calculate_beta_gradient(data_array, height_top/2)
 Analysis_wg.normalize_beta_gradients(data_array)

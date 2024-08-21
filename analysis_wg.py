@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm, Normalize
 from matplotlib.patches import Rectangle
+from scipy.integrate import simps
 
 import importlib.util
 
@@ -106,7 +107,7 @@ class Analysis_wg:
         return poynting_vector
 
 
-    def purcell_factor(mode_data):
+    def purcell_factor(mode_data, lam0):
         """
         Calculate the Purcell factors (gamma_y, gamma_z) using the Ey and Ez components of the electric field.
 
@@ -119,6 +120,17 @@ class Analysis_wg:
         # Calculate the Poynting vector
         poynting_vector = Analysis_wg.calculate_poynting_vector(mode_data)
         
+        # Constants
+        pi = np.pi
+        c = 3e8  # Speed of light in vacuum (m/s)
+        epsilon_0 = 8.854187817e-12  # Permittivity of free space (F/m)
+        
+        # Calculate k0
+        k0 = 2 * pi / lam0
+        
+        # Constant part of the expression
+        constant_part = (3 * pi * c * epsilon_0) / k0**2
+
         # Extract necessary components
         Ey = mode_data["Ey"]
         Ez = mode_data["Ez"]
@@ -128,22 +140,23 @@ class Analysis_wg:
         y = mode_data["y"]
         z = mode_data["z"]
         
-        # Calculate grid spacings assuming a uniform grid
-        dy = np.abs(y[1] - y[0])
-        dz = np.abs(z[1] - z[0])
+        # Calculate grid spacings in a non  uniform grid
+        # Integrate along the x-axis for each y slice
+        integrate_Sx = simps(Sx, x=y, axis=1)
+
+        # Now integrate the result along the y-axis
+        integrate_Sx = simps(integrate_Sx, x=z)
         
-        # Perform the integration of Sx over the y-z plane
-        integrate_Sx = np.sum(Sx) * dy * dz
         
         # Calculate the Purcell factors for Ey and Ez
-        gamma_y = (np.abs(Ey)**2) / integrate_Sx
-        gamma_z = (np.abs(Ez)**2) / integrate_Sx
+        gamma_y = (np.abs(Ey)**2) / integrate_Sx*constant_part
+        gamma_z = (np.abs(Ez)**2) / integrate_Sx*constant_part
         
         # Return the dictionary
         return {"gamma_y": gamma_y, "gamma_z": gamma_z}
     
     @staticmethod
-    def collect_purcell(data_array):
+    def collect_purcell(data_array, lam0=1550e-9):
         """
         Calculate and collect Purcell factors for each mode in a data array.
         
@@ -155,7 +168,7 @@ class Analysis_wg:
         """
         for data in data_array:
             for mode in data:
-                mode["purcell_factors"] = Analysis_wg.purcell_factor(mode)
+                mode["purcell_factors"] = Analysis_wg.purcell_factor(mode, lam0)
 
 
 
@@ -203,7 +216,7 @@ class Analysis_wg:
         return pcm
 
     @staticmethod
-    def plot_purcell(ax, data, title, purcell_key="purcell_factors_normalized", y_span=None, z_span=None, k="y", normalize=False):
+    def plot_purcell(ax, data, title, purcell_key="purcell_factors", y_span=None, z_span=None, k="y", normalize=False):
         """
         Plots the Purcell factor on a given axis with customizable window size centered at zero.
 
@@ -254,37 +267,7 @@ class Analysis_wg:
         return pcm
        
     
-    @staticmethod
-    def normalize_purcell_factors(data_array):
-        """
-        Normalize Purcell factors across a series of modes.
-
-        Parameters:
-        - data_array: List of mode data dictionaries.
-
-        Returns:
-        - None: The function modifies the input list in place, normalizing the Purcell factors for each mode.
-        """
-        purcell_max_y = 0
-        purcell_max_z = 0
-        for data in data_array:
-            for mode in data: 
-                purcell_factors = mode["purcell_factors"]
-                purcell_max_y = max(purcell_max_y, np.max(purcell_factors["gamma_y"]))
-                purcell_max_z = max(purcell_max_z, np.max(purcell_factors["gamma_z"]))
-        purcell_max = max(purcell_max_y, purcell_max_z)
-
-        for data in data_array: 
-            for mode in data: 
-                purcell_factors = mode["purcell_factors"]
-                gamma_y_normalized = purcell_factors["gamma_y"] / purcell_max
-                gamma_z_normalized = purcell_factors["gamma_z"] / purcell_max
-                purcell_factors_normalized = {
-                    "gamma_y" : gamma_y_normalized,
-                    "gamma_z" : gamma_z_normalized
-                }
-                mode["purcell_factors_normalized"] = purcell_factors_normalized
-
+    
 
     @staticmethod
     def calculate_beta_factor(data_array):
@@ -301,9 +284,9 @@ class Analysis_wg:
             P_y = []
             P_z = []
             for mode in data:
-                purcell_factors_normalized = mode["purcell_factors_normalized"]
-                gamma_y = purcell_factors_normalized["gamma_y"]
-                gamma_z = purcell_factors_normalized["gamma_z"]
+                purcell_factors = mode["purcell_factors"]
+                gamma_y = purcell_factors["gamma_y"]
+                gamma_z = purcell_factors["gamma_z"]
                 P_y.append(gamma_y)
                 P_z.append(gamma_z)
             
@@ -370,7 +353,7 @@ class Analysis_wg:
         # Plot the data
         if normalize:
             pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(beta_dictionary[f"beta_{k}"]), 
-                                shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=0.5))
+                                shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=1))
         else:
             pcm = ax.pcolormesh(data["y"]*1e6, data["z"]*1e6, np.transpose(beta_dictionary[f"beta_{k}"]), 
                                 shading='gouraud', cmap='jet')
@@ -421,19 +404,25 @@ class Analysis_wg:
                 # Find indices that are within the specified region
                 y_indices = np.where((y >= y_min) & (y <= y_max))[0]
                 z_indices = np.where((z >= z_min) & (z <= z_max))[0]
+                y_ = y[y_indices]
+                z_ = z[z_indices]
 
                 # Extract the subarray of beta within the specified range
                 beta_subarray_y = beta_y[np.ix_(y_indices, z_indices)]
                 beta_subarray_z = beta_z[np.ix_(y_indices, z_indices)]
 
-                # Calculate the grid spacings (assuming uniform grid)
-                dy = np.abs(y[1] - y[0])
-                dz = np.abs(z[1] - z[0])
+                
 
                 # Integrate beta over the specified region
-                beta_integral_y = np.sum(beta_subarray_y) * dy * dz
-                beta_integral_z = np.sum(beta_subarray_z) * dy * dz
+                beta_integral_y = simps(beta_subarray_y, x=z_, axis=1)
+                beta_integral_y = simps(beta_integral_y, x=y_ )
+
+
+                beta_integral_z = simps(beta_subarray_z, x=z_, axis=1)
+                beta_integral_z = simps(beta_integral_z, x=y_)
                 
+
+
                 # Add the integrated beta values to the mode's dictionary
                 mode["beta_integrals"] = {
                     "beta_integral_y": beta_integral_y,
@@ -768,7 +757,7 @@ class Analysis_wg:
         #ax_right.legend()
         ax_right.grid(True)
 
-        ax_right.set_ylim((0,0.5))
+        ax_right.set_ylim((0,1))
         return line
 
    
