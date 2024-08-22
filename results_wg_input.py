@@ -63,6 +63,7 @@ height_bottom = 350e-9
 normalize_ = True
 
 
+
 #%%
 # ______CALCULATE BETA FACTOR_____________________________________
 
@@ -210,4 +211,13 @@ for data,  width in zip(data_array,  width_array):
     print(f"figure '{PATH}{PICS}/beta_gradient/beta_gradient_{width/1e-9:.0f}.png' saved")
     #plt.show()
     plt.close(figure)
+# %%
+    modes, widths = Analysis_wg.find_te_modes_with_highest_neff(data_array)
+    results = Analysis_wg.get_beta_at_position(modes, y0=None,z0 = 313e-9/2)
+    Analysis_wg.plot_beta3D(results)
+
+#%%  
+    modes, widths = Analysis_wg.find_te_modes_with_highest_neff(data_array)
+    results = Analysis_wg.get_beta_at_position(modes, y0=0 ,z0 = 313e-9/2)
+    Analysis_wg.plot_beta2D(results)
 # %%
