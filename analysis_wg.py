@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm, Normalize
 from matplotlib.patches import Rectangle
 from scipy.integrate import simps
+from scipy.interpolate import interp1d
+from mpl_toolkits.mplot3d import Axes3D
 
 import importlib.util
 
@@ -763,14 +765,106 @@ class Analysis_wg:
 
 
     @staticmethod
-    def get_beta_at_position(mode, y0, z0):
-        y = mode["y"] * 1e6  # Convert y to micrometers
-        z = mode["z"]
-        beta_y = mode["beta_factors"]["beta_y"]
-        beta_z = mode["beta_factors"]["beta_z"]
+    def get_beta_at_position(modes, y0=0, z0=313e-9/2):
         
-    
+        results =[]
+        for mode in modes:
+            y = mode["y"]
+            z = mode["z"]
+            width = mode["width"]
+            beta_y = mode["beta_factors"]["beta_y"]
+            beta_z = mode["beta_factors"]["beta_z"]
+            
+            if y0 is None :
+                z_index = (np.abs(z - z0)).argmin()
+                y_index = range(len(y))
+            elif z0 is None :  
+                z_index = range(len(z))
+                y_index = (np.abs(y - y0)).argmin()
+            else : 
+                y_index = (np.abs(y - y0)).argmin()
+                z_index = (np.abs(z - z0)).argmin()
+
+            y_ = y[y_index]
+            z_ = z[z_index]
+            beta_y_ = (beta_y[y_index, z_index])
+            beta_z_ = (beta_z[y_index, z_index])
+            
+            result = {
+                "z" : z_,
+                "y" : y_, 
+                "beta_y" : beta_y_, 
+                "beta_z" : beta_z_,
+                "width"  : width
+                }
+            print(f"done:{len(results)}")
 
 
 
-   
+            results.append(result)
+        return results
+
+ 
+
+
+    @staticmethod
+    def find_te_modes_with_highest_neff(data_array):
+        modes=[]
+        widths=[]
+        for data in data_array:
+            for mode in data:
+                if mode["te_fraction"]>0.5:
+                    widths.append(mode["width"])
+                    modes.append(mode)
+                    break  
+        return (modes, widths)
+
+
+
+
+
+    @staticmethod
+    def plot_beta3D(results):
+        # Determine the longest y array
+        max_y_len = max(len(res['y']) for res in results)
+        max_y_result = max(results, key=lambda res: len(res['y']))
+        common_y = max_y_result['y']  # Use the longest y array as the common y axis
+        
+        # Initialize a list to store the interpolated beta_y values
+        interpolated_beta_ys = []
+        widths = []
+        
+        for res in results:
+            # Interpolate beta_y onto the common y axis
+            f_interp = interp1d(res['y'], res['beta_y'], kind='linear', bounds_error=False, fill_value=0)
+            interpolated_beta_y = f_interp(common_y)
+            interpolated_beta_ys.append(interpolated_beta_y)
+            widths.append(res['width'])
+        
+        # Convert lists to numpy arrays
+        widths = np.array(widths)
+        interpolated_beta_ys = np.array(interpolated_beta_ys)
+        
+        # Create a meshgrid for the plot
+        W, Y = np.meshgrid(widths, common_y)
+        
+        # Plotting the mesh
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        
+        # Transpose the interpolated beta_y values for correct plotting
+        ax.plot_surface(W.T, Y.T, interpolated_beta_ys, cmap='viridis')
+        
+        ax.set_xlabel('width')
+        ax.set_ylabel('y')
+        ax.set_zlabel(r'$\beta - factor$')
+        
+        plt.show()
+
+
+    def plot_beta2D(results):
+        widths = np.array([res["width"] for res in results])
+        betas_y = np.array([res["beta_y"] for res in results])
+        plt.plot(widths/1e-6, betas_y)
+        plt.xlabel(r"width [um]")
+        plt.ylabel(r"$\beta - factor$")
