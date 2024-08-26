@@ -633,23 +633,24 @@ class Analysis_wg:
         # Extract data
         y = mode["y"] * 1e6  # Convert y to micrometers
 
-        if mode["te_fraction"] > 0.5:
-            # Plot the gradient of beta_y in red
-            gradient = beta_gradients["gradient_y"]
-            color = 'red'
-            label = f"Gradient of beta_y (z = {z_position * 1e6:.2f} µm)"
-        else:
-            # Plot the gradient of beta_z in blue
-            gradient = beta_gradients["gradient_z"]
-            color = 'blue'
-            label = f"Gradient of beta_z (z = {z_position * 1e6:.2f} µm)"
+        #if mode["te_fraction"] > 0.5:
+        # Plot the gradient of beta_y in red
+        gradient = beta_gradients["gradient_y"]
+        color = 'orange'
+        label = f"Gradient of $\\beta$-factor at $z={z_position * 1e9:.0f}nm$)"
+        # else:
+        #     # Plot the gradient of beta_z in blue
+        #     gradient = beta_gradients["gradient_z"]
+        #     color = 'blue'
+        #     label = f"Gradient of beta_z (z = {z_position * 1e6:.3f} µm)"
         
         # Plot the gradient
         line, = ax.plot(y, gradient,"--" ,  color=color, label=label)
 
         # Set axis labels and title
         ax.set_xlabel("y (µm)")
-        ax.set_ylabel("Gradient of $\\beta$")
+        ax.set_ylabel("Gradient of $\\beta$-factor", color= color)
+        ax.tick_params(axis='y', labelcolor=color)
         if title:
             ax.set_title(title)
         
@@ -736,14 +737,14 @@ class Analysis_wg:
         z_index = (np.abs(z - z_)).argmin()
         
         # Determine which beta factor to plot based on the TE fraction
-        if mode["te_fraction"] > 0.5:
-            beta_values = beta_y[:, z_index]
-            color = 'red'
-            label = f"beta_y at z = {z_ * 1e6:.2f} µm"
-        else:
-            beta_values = beta_z[:, z_index]
-            color = 'blue'
-            label = f"beta_z at z = {z_ * 1e6:.2f} µm"
+        #if mode["te_fraction"] > 0.5:
+        beta_values = beta_y[:, z_index]
+        color = 'red'
+        label = f"$\\beta$-factor at $z = {z_ * 1e9:.0f} nm$"
+        # else:
+        #     beta_values = beta_z[:, z_index]
+        #     color = 'blue'
+        #     label = f"beta_z at z = {z_ * 1e9:.0f} µm"
         
         # Plot the beta values along the y-axis at z = z_ on the right y-axis
         line, = ax_right.plot(y, beta_values, color=color, label=label)
@@ -862,9 +863,21 @@ class Analysis_wg:
         plt.show()
 
 
-    def plot_beta2D(results):
+    def plot_beta2D(figure, ax, results):
         widths = np.array([res["width"] for res in results])
         betas_y = np.array([res["beta_y"] for res in results])
-        plt.plot(widths/1e-6, betas_y)
-        plt.xlabel(r"width [um]")
-        plt.ylabel(r"$\beta - factor$")
+        beta_max = np.max(betas_y)
+        beta_max_idx = np.where(betas_y==beta_max)
+        width_max = widths[beta_max_idx][0]
+        print(width_max)
+        ax.scatter(widths/1e-6, betas_y, color = "blue", label = rf"$\beta$-factor")
+        ax.scatter(width_max/1e-6, beta_max, color = "red", marker="x", s = 50, label = rf"$\beta_MAx$={beta_max:0.3f} at {width_max/1e-9:0.0f} nm")
+        ax.set_xlabel(r"width [um]")
+        ax.set_ylabel(r"$\beta - factor$")
+        title = rf"""
+$\beta$ factor in the center of the $InP$ versus different WG widths 
+QD emission polarized along $y$.
+"""
+        ax.set_title(title)
+        ax.grid()
+        ax.legend()
