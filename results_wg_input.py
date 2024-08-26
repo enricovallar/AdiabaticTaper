@@ -217,7 +217,38 @@ for data,  width in zip(data_array,  width_array):
     Analysis_wg.plot_beta3D(results)
 
 #%%  
+    figure, ax = plt.subplots(dpi = 300, figsize = (12, 6))
     modes, widths = Analysis_wg.find_te_modes_with_highest_neff(data_array)
     results = Analysis_wg.get_beta_at_position(modes, y0=0 ,z0 = 313e-9/2)
-    Analysis_wg.plot_beta2D(results)
+    Analysis_wg.plot_beta2D(figure, ax,results)
+    plt.savefig(f"{PATH}{PICS}/beta_2D.png")
+# %%
+
+
+modes2 = [modes[3], modes[5], modes[15], modes[25]]
+widths2 = [widths[3], widths[5], widths[15], widths[25]]
+
+figure,axs = plt.subplots(2,2, figsize=(12,8), constrained_layout = True,  dpi = 300)
+for mode, ax in zip(modes2, axs.flatten()):
+    
+    width = mode["width"]
+    title =  f"Higher $n_{{eff}}$ TE mode @ $w_{{InP}} = {width/1e-9:0.0f}nm$: $n_{{eff}} = {np.squeeze(mode['neff'].real):.2f}$, $f_{{TE}}={mode['te_fraction']*100:.0f}\%$"
+    line2 = Analysis_wg.plot_beta_at_z(height_top/2, ax, mode)
+    line1 = Analysis_wg.plot_beta_gradient(ax, mode, 
+                                    z_position=height_top/2,
+                                    title = title,
+                                    normalize=True, 
+                                    xlim = (-0.1,0.1))
+
+    
+    
+    lines = [line2, line1]
+    labels = [line.get_label() for line in lines]
+    ax.legend(lines, labels, loc=0)
+
+
+plt.savefig(f"{PATH}{PICS}/XXX.png", dpi = 300)
+print(f"figure '{PATH}{PICS}/XXX.png' saved")
+plt.show()
+plt.close(figure)
 # %%
