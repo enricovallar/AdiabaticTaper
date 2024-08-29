@@ -5,8 +5,8 @@ import numpy as np
 from analysis_wg import Analysis_wg
 import matplotlib.pyplot as plt
 
-PATH = "../working_data/"
-DATAFILE = 'wg_input_data.pickle'
+PATH_DATA   = rf"D:\WG\data"
+DATA_FILE_NAME = "wg_input_data.pickle"
 PICS = 'wg_input_plots'
 
 DPI = 300
@@ -17,36 +17,36 @@ except:
     pass
 
 try:
-    os.mkdir(f"{PATH}{PICS}/E2")
-    print(f"Directory '{PATH}{PICS}/E2/' created successfully")
+    os.mkdir(f"{PATH_DATA}{PICS}/E2")
+    print(f"Directory '{PATH_DATA}{PICS}/E2/' created successfully")
 except FileExistsError:
-    print(f"Directory '{PATH}{PICS}/E2/' already exists")
+    print(f"Directory '{PATH_DATA}{PICS}/E2/' already exists")
 except OSError as error:
-    print(f"Error creating directory '{PATH}{PICS}/E2/': {error}")
+    print(f"Error creating directory '{PATH_DATA}{PICS}/E2/': {error}")
 
 try:
-    os.mkdir(f"{PATH}{PICS}/purcell")
-    print(f"Directory '{PATH}{PICS}/purcell/' created successfully")
+    os.mkdir(f"{PATH_DATA}{PICS}/purcell")
+    print(f"Directory '{PATH_DATA}{PICS}/purcell/' created successfully")
 except FileExistsError:
-    print(f"Directory '{PATH}{PICS}/purcell/' already exists")
+    print(f"Directory '{PATH_DATA}{PICS}/purcell/' already exists")
 except OSError as error:
-    print(f"Error creating directory '{PATH}{PICS}/purcell/': {error}")
+    print(f"Error creating directory '{PATH_DATA}{PICS}/purcell/': {error}")
 
 try:
-    os.mkdir(f"{PATH}{PICS}/beta")
-    print(f"Directory '{PATH}{PICS}/beta/' created successfully")
+    os.mkdir(f"{PATH_DATA}{PICS}/beta")
+    print(f"Directory '{PATH_DATA}{PICS}/beta/' created successfully")
 except FileExistsError:
-    print(f"Directory '{PATH}{PICS}/beta/' already exists")
+    print(f"Directory '{PATH_DATA}{PICS}/beta/' already exists")
 except OSError as error:
-    print(f"Error creating directory '{PATH}{PICS}/beta/': {error}")
+    print(f"Error creating directory '{PATH_DATA}{PICS}/beta/': {error}")
 
 try:
-    os.mkdir(f"{PATH}{PICS}/beta_gradient")
-    print(f"Directory '{PATH}{PICS}/brata_gradient/' created successfully")
+    os.mkdir(f"{PATH_DATA}{PICS}/beta_gradient")
+    print(f"Directory '{PATH_DATA}{PICS}/brata_gradient/' created successfully")
 except FileExistsError:
-    print(f"Directory '{PATH}{PICS}/beta_gradient/' already exists")
+    print(f"Directory '{PATH_DATA}{PICS}/beta_gradient/' already exists")
 except OSError as error:
-    print(f"Error creating directory '{PATH}{PICS}/beta_gradient/': {error}")
+    print(f"Error creating directory '{PATH_DATA}{PICS}/beta_gradient/': {error}")
 
 
 #%%
