@@ -1,0 +1,41 @@
+Ansys Lumerical 2023 R2.2 Eigenmode Expansion Solver Version 7.22.3536 (Windows 64bit)
+ expires (month/day/year): 12/26/2024
+using config file: Ansys Licensing set with ANSYSLMD_LICENSE_FILE
+license host: 4211@license5.cc.dtu.dk
+current time: Sun Oct 6 21:46:19 2024
+Running on host: Adria-Riera
+All processes are communicating and ready to proceed to simulation...
+Running lms file: C:\Program Files\Lumerical\v232\bin\eme-engine-msmpi.exe -t 1 -remote -shared-solve-license QU5TWVNfTElDRU5TSU5HX0NPTlRFWFRfREFUQT08QU5TWVNfTElDRU5TSU5HX0NPTlRFWFRfREFUQT48SUQ+Yjg3NjZkODktNjBmYi00YjhmLTg1NzMtMWI1M2Y2YWRmMDhmPC9JRD48VFlQRT5BUFBfREVGSU5FRDwvVFlQRT48TkFNRT5sdW1fc3RhbmRhcmRfc29sdmVfc2hhcmU8L05BTUU+PEhBTkRMRVI+NTA1ODBAQWRyaWEtUmllcmE8L0hBTkRMRVI+PC9BTlNZU19MSUNFTlNJTkdfQ09OVEVYVF9EQVRBPgo= C:/Users/EnricoVallar/OneDrive - Sparrow Quantum Aps/Desktop/AdiabaticTaper/model.lms
+All processes are communicating and ready to proceed to simulation...
+Running MODE Simulation
+Starting simulation
+Starting meshing
+Simulation size in gridpoints: 1 x 392 x 156
+Refined 0 mesh cells (0%)
+Completed meshing!
+Meshing complete in 0.953125 seconds of CPU time
+Starting meshing
+Simulation size in gridpoints: 1 x 392 x 156
+Refined 0 mesh cells (0%)
+Completed meshing!
+Meshing complete in 0.96875 seconds of CPU time
+Starting meshing
+Simulation size in gridpoints: 1 x 392 x 156
+Refined 0 mesh cells (0%)
+Completed meshing!
+Meshing complete in 0.96875 seconds of CPU time
+Starting meshing
+Simulation size in gridpoints: 1 x 392 x 156
+Refined 0 mesh cells (0%)
+Completed meshing!
+Meshing complete in 0.953125 seconds of CPU time
+Starting meshing
+Simulation size in gridpoints: 1 x 392 x 156
+Refined 0 mesh cells (0%)
+Completed meshing!
+Meshing complete in 0.984375 seconds of CPU time
+Starting meshing
+Simulation size in gridpoints: 1 x 392 x 156
+Refined 0 mesh cells (0%)
+Completed meshing!
+Meshing complete in 0.96875 seconds of CPU time

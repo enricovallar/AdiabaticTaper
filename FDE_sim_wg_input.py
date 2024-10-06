@@ -76,13 +76,14 @@ if __name__ == "__main__":
     #_____________________________________________________  
     #  1) REALIZE MODELS AND SIMULATE. SAVE DATA FOR LATER. 
     #_____________________________________________________
+    import configuration
     from waveguides_simulations import GeomBuilder
     from waveguides_simulations import WaveguideModeFinder
     import importlib.util
     #The default paths for windows
-    spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
+    spec_win = importlib.util.spec_from_file_location('lumapi', configuration.LUMERICAL_API_PATH)
     #Functions that perform the actual loading
-    lumapi = importlib.util.module_from_spec(spec_win) # 
+    lumapi = importlib.util.module_from_spec(spec_win) 
     spec_win.loader.exec_module(lumapi)
     import numpy as np
     import time
@@ -211,8 +212,9 @@ if __name__ == "__main__":
     import pickle
     import os
     import importlib.util
+    import configuration
     #The default paths for windows
-    spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
+    spec_win = importlib.util.spec_from_file_location('lumapi', configuration.LUMERICAL_API_PATH)
     #Functions that perform the actual loading
     lumapi = importlib.util.module_from_spec(spec_win) # 
     spec_win.loader.exec_module(lumapi)
@@ -300,8 +302,9 @@ if __name__ == "__main__":
     import pickle
     import os
     import importlib.util
+    import configuration
     #The default paths for windows
-    spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
+    spec_win = importlib.util.spec_from_file_location('lumapi', configuration.LUMERICAL_API_PATH)
     #Functions that perform the actual loading
     lumapi = importlib.util.module_from_spec(spec_win) # 
     spec_win.loader.exec_module(lumapi)

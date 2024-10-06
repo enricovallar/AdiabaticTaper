@@ -261,7 +261,8 @@ class TaperDesigner:
 
 if __name__ == "__main__":
     import importlib.util
-    spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
+    import configuration
+    spec_win = importlib.util.spec_from_file_location('lumapi', configuration.LUMERICAL_API_PATH)
     lumapi = importlib.util.module_from_spec(spec_win)
     spec_win.loader.exec_module(lumapi)
     env = lumapi.MODE()
