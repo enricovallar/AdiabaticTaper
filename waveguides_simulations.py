@@ -8,263 +8,362 @@ import numpy as np
 
 class LumObj:
     def __init__(self, env):
+        # Initialize the LumObj with the given environment
         self._env = env
         self._configuration = ()
 
     def update_configuration(self):
-
+        # Update the configuration for each object with its parameters
         for obj, parameters in self.configuration:
             for k, v in parameters:
                 self.env.setnamed(obj, k, v)
 
-
     def add_to_configuration(self, new_element_configuration):
+        # Add new elements to the existing configuration
         self.configuration = self.configuration + new_element_configuration
-        
-        
 
     @property
     def env(self):
+        # Return the environment
         return self._env
-    
+
     @property 
     def configuration(self):
+        # Return the current configuration
         return self._configuration
-    
+
     @configuration.setter
     def configuration(self, new_configuration):
+        # Set a new configuration
         self._configuration = new_configuration
 
      
 class GeomBuilder(LumObj):
-         
+    """
+    GeomBuilder class for creating and configuring geometric structures in the simulation environment.
+    Inherits from LumObj.
+    """
+    
     def input_wg(
         self,
-        name_top    = "InP_input_wg",
-        name_bottom = "SiN_input_wg", 
-        material_top        = "InP - Palik",
-        material_bottom     = "Si3N4 (Silicon Nitride) - Phillip",
-        material_background = "SiO2 (Glass) - Palik", 
-        width_top     : float = 550e-9,
-        width_bottom  : float = 550e-9,
-        height_top    : float = 313e-9, 
-        height_bottom : float = 350e-9,
-        length_top    : float = 10e-6, 
-        length_bottom : float = 10e-6,
-        x_ : float = 0,
-        y_ : float = 0,
-        z_ : float = 0,
-        x_min_ : float = None,
-        y_min_ : float = None,
-        z_min_ : float = None,
-        layout_group_name = "Input Waveguide"
-    ): 
+        name_top="InP_input_wg",
+        name_bottom="SiN_input_wg", 
+        material_top="InP - Palik",
+        material_bottom="Si3N4 (Silicon Nitride) - Phillip",
+        material_background="SiO2 (Glass) - Palik", 
+        width_top: float = 550e-9,
+        width_bottom: float = 550e-9,
+        height_top: float = 313e-9, 
+        height_bottom: float = 350e-9,
+        length_top: float = 10e-6, 
+        length_bottom: float = 10e-6,
+        x_: float = 0,
+        y_: float = 0,
+        z_: float = 0,
+        x_min_: float = None,
+        y_min_: float = None,
+        z_min_: float = None,
+        layout_group_name="Input Waveguide"
+    ):
+        """
+        Create input waveguides with specified parameters and add them to the simulation environment.
         
-        if x_min_ is not None: x_ = x_min_/2
-        if y_min_ is not None: y_ = y_min_/2
-        if z_min_ is not None: z_ = z_min_/2
+        Parameters:
+        - name_top (str): Name of the top waveguide. Default is "InP_input_wg".
+        - name_bottom (str): Name of the bottom waveguide. Default is "SiN_input_wg".
+        - material_top (str): Material of the top waveguide. Default is "InP - Palik".
+        - material_bottom (str): Material of the bottom waveguide. Default is "Si3N4 (Silicon Nitride) - Phillip".
+        - material_background (str): Material of the background. Default is "SiO2 (Glass) - Palik".
+        - width_top (float): Width of the top waveguide in meters. Default is 550e-9.
+        - width_bottom (float): Width of the bottom waveguide in meters. Default is 550e-9.
+        - height_top (float): Height of the top waveguide in meters. Default is 313e-9.
+        - height_bottom (float): Height of the bottom waveguide in meters. Default is 350e-9.
+        - length_top (float): Length of the top waveguide in meters. Default is 10e-6.
+        - length_bottom (float): Length of the bottom waveguide in meters. Default is 10e-6.
+        - x_ (float): X-coordinate of the  center of the waveguide. Default is 0. Overwritten if x_min_ is provided.
+        - y_ (float): Y-coordinate of the  center of the waveguides. Default is 0. Overwritten if y_min_ is provided.
+        - z_ (float): Z-coordinate of the  center of the  waveguides. Default is 0. Overwritten if z_min_ is provided.
+        - x_min_ (float, optional): Minimum X-coordinate for waveguide. Default is None. 
+        - y_min_ (float, optional): Minimum Y-coordinate for waveguide. Default is None.
+        - z_min_ (float, optional): Minimum Z-coordinate for waveguide. Default is None.
+        - layout_group_name (str): Name of the layout group. Default is "Input Waveguide".
+
+        This method creates two rectangular waveguides (top and bottom) with the specified dimensions and materials,
+        and adds them to the simulation environment. The positions of the waveguides can be adjusted based on the 
+        provided minimum values.
+        """
+        
+        # Set center positions if the minimum values are provided
+        if x_min_ is not None: x_ = x_min_ / 2
+        if y_min_ is not None: y_ = y_min_ / 2
+        if z_min_ is not None: z_ = z_min_ / 2
         
         env = self.env
 
-        
-        #Top Waveguide
+        # Create top waveguide
         env.addrect()
         env.set("name", name_top)
         env.addtogroup(layout_group_name)
-        #Bottom Waveguide
+        
+        # Create bottom waveguide
         env.addrect()
         env.set("name", name_bottom)
         env.addtogroup(layout_group_name)
         
+        # Configuration for the geometry
         configuration_geometry = (
-        (name_top,    (("material", material_top),
-                       ("x", x_),
-                       ("y", y_),
-                       ("z min", z_),                       
-                       ("x span", length_top),
-                       ("y span", width_top),
-                       ("z max",  z_ + height_top))),
-                       
-
-        (name_bottom, (("material", material_bottom),
-                       ("x", x_),
-                       ("y", y_),
-                       ("z min", z_ -height_bottom),
-                       ("x span", length_bottom),
-                       ("y span", width_bottom),
-                       ("z max", z_))),
+            (name_top, (
+                ("material", material_top),
+                ("x", x_),
+                ("y", y_),
+                ("z min", z_),
+                ("x span", length_top),
+                ("y span", width_top),
+                ("z max", z_ + height_top)
+            )),
+            (name_bottom, (
+                ("material", material_bottom),
+                ("x", x_),
+                ("y", y_),
+                ("z min", z_ - height_bottom),
+                ("x span", length_bottom),
+                ("y span", width_bottom),
+                ("z max", z_)
+            )),
         )
         
+        # Set the group scope and update the configuration
         env.groupscope(f"::model::{layout_group_name}")
-        
+
         self.configuration = configuration_geometry
         self.update_configuration()
-        
+
         env.groupscope('::model')
 
     def output_wg(
         self,
-        name = 'Output_wg',
-        material = 'Si3N4 (Silicon Nitride) - Phillip',
-        width = 1100e-9,
-        height = 350e-9,
-        length = 2e-6,
-        x_ = 0,
-        y_ = 0,
-        z_ = 0,
-        x_min_ = None, #44e-6
-        y_min_ = None,
-        z_min_ = None,  #-300e-9
-        layout_group_name = 'Output Waveguide'
+        name='Output_wg',
+        material='Si3N4 (Silicon Nitride) - Phillip',
+        width=1100e-9,
+        height=350e-9,
+        length=2e-6,
+        x_=0,
+        y_=0,
+        z_=0,
+        x_min_=None,
+        y_min_=None,
+        z_min_=None,
+        layout_group_name='Output Waveguide'
     ):
+        """
+        Create an output waveguide with specified parameters and add it to the simulation environment.
+        
+        Parameters:
+        - name (str): Name of the output waveguide. Default is 'Output_wg'.
+        - material (str): Material of the output waveguide. Default is 'Si3N4 (Silicon Nitride) - Phillip'.
+        - width (float): Width of the output waveguide in meters. Default is 1100e-9.
+        - height (float): Height of the output waveguide in meters. Default is 350e-9.
+        - length (float): Length of the output waveguide in meters. Default is 2e-6.
+        - x_ (float): X-coordinate of the center of the waveguide. Default is 0. Overwritten if x_min_ is provided.
+        - y_ (float): Y-coordinate of the center of the waveguide. Default is 0. Overwritten if y_min_ is provided.
+        - z_ (float): Z-coordinate of the center of the waveguide. Default is 0. Overwritten if z_min_ is provided.
+        - x_min_ (float, optional): Minimum X-coordinate for waveguide. Default is None.
+        - y_min_ (float, optional): Minimum Y-coordinate for waveguide. Default is None.
+        - z_min_ (float, optional): Minimum Z-coordinate for waveguide. Default is None.
+        - layout_group_name (str): Name of the layout group. Default is 'Output Waveguide'.
+
+        This method creates a rectangular output waveguide with the specified dimensions and material,
+        and adds it to the simulation environment. The position of the waveguide can be adjusted based on the 
+        provided minimum values.
+        """
+        
         env = self.env
 
-        if x_min_ is not None: x_ = x_min_/2
-        if y_min_ is not None: y_ = y_min_/2
-        if z_min_ is not None: z_ = z_min_/2
+        # Set center positions if the minimum values are provided
+        if x_min_ is not None: x_ = x_min_ / 2
+        if y_min_ is not None: y_ = y_min_ / 2
+        if z_min_ is not None: z_ = z_min_ / 2
 
-
-        #Waveguide
+        # Create waveguide
         env.addrect()
-        env.set('name',name)
+        env.set('name', name)
         env.addtogroup(layout_group_name)
 
-        configuration_geometry =   (
-        (name,   (('material',material),
-                ('x',x_),
-                ('y',y_),
-                ('z',z_),
-                ('y span',width),
-                ('z span',height),
-                ('x span',length))),
+        # Configuration for the geometry
+        configuration_geometry = (
+            (name, (
+                ('material', material),
+                ('x', x_),
+                ('y', y_),
+                ('z', z_),
+                ('y span', width),
+                ('z span', height),
+                ('x span', length)
+            )),
         )
 
+        # Set the group scope and update the configuration
         env.groupscope(f'::model::{layout_group_name}')
-
         self.configuration = configuration_geometry
         self.update_configuration()
-    
         env.groupscope('::model')
 
     def taper_top(
         self,
-        name = 'Taper_in',
+        name='Taper_in',
         height: float = 313e-9,
         length: float = 19e-6,
         width_in: float = 550e-9,
         width_out: float = 50e-9,
         material: str = 'InP - Palik',
         m: float = 0.8,
-        layout_group_name = "Taper",
-        z_ = 313e-9/2
+        layout_group_name="Taper",
+        z_=313e-9 / 2
     ):
+        """
+        Create a top taper structure with specified parameters and add it to the simulation environment.
+        
+        Parameters:
+        - name (str): Name of the taper structure. Default is 'Taper_in'.
+        - height (float): Height of the taper structure in meters. Default is 313e-9.
+        - length (float): Length of the taper structure in meters. Default is 19e-6.
+        - width_in (float): Input width of the taper structure in meters. Default is 550e-9.
+        - width_out (float): Output width of the taper structure in meters. Default is 50e-9.
+        - material (str): Material of the taper structure. Default is 'InP - Palik'.
+        - m (float): Exponent for the taper profile. Default is 0.8.
+        - layout_group_name (str): Name of the layout group. Default is 'Taper'.
+        - z_ (float): Z-coordinate of the center of the taper structure. Default is 313e-9 / 2.
+        
+        This method creates a top taper structure with the specified dimensions and material,
+        and adds it to the simulation environment. The taper profile is defined by the exponent m.
+        """
         env = self.env
 
-
-        #script
+        # Script for creating the taper
         script_taper_in = ''' 
-
-    res = 5000; #resolution of polygon
-    xspan = linspace(-len/2,len/2,res);
-    a = (w1/2 - w2/2)/len^m;
-    yspan = a * (len*0.5 - xspan)^m + w2/2;
-    
-    V = matrix(2*res,2);
-    #[x,y] points
-    V(1:2*res,1) = [xspan, flip(xspan,1)]; 
-    V(1:2*res,2) = [-yspan , flip(yspan,1)];
-    
-    addpoly;
-    set("name", "taper");
-    set("x",0);
-    set("y",0);
-    set("z",0);
-    set("z span",h1);
-    set("vertices",V);
-    set("material", mat);
-
-'''
-        #print(f"script variable is of type {type(script_taper_in)}\n Script is: {script_taper_in}")
+        res = 5000; # resolution of polygon
+        xspan = linspace(-len/2, len/2, res);
+        a = (w1/2 - w2/2) / len^m;
+        yspan = a * (len * 0.5 - xspan)^m + w2/2;
         
+        V = matrix(2 * res, 2);
+        # [x, y] points
+        V(1:2 * res, 1) = [xspan, flip(xspan, 1)]; 
+        V(1:2 * res, 2) = [-yspan, flip(yspan, 1)];
+        
+        addpoly;
+        set("name", "taper");
+        set("x", 0);
+        set("y", 0);
+        set("z", 0);
+        set("z span", h1);
+        set("vertices", V);
+        set("material", mat);
+        '''
 
-        #Taper
+        # Create taper structure group
         env.addstructuregroup()
-        env.set('name',name)
+        env.set('name', name)
         env.set('construction group', 1)
         env.addtogroup(layout_group_name)
 
-        env.adduserprop('len',2,length)
-        env.adduserprop('h1',2,height)
-        env.adduserprop('w1',2,width_in)
-        env.adduserprop('w2',2,width_out)
-        env.adduserprop('m',0,m)
-        env.adduserprop('mat',1,material)
+        # Add user properties for the taper
+        env.adduserprop('len', 2, length)
+        env.adduserprop('h1', 2, height)
+        env.adduserprop('w1', 2, width_in)
+        env.adduserprop('w2', 2, width_out)
+        env.adduserprop('m', 0, m)
+        env.adduserprop('mat', 1, material)
 
-
-        env.set('script',script_taper_in)
-        #env.groupscope('::model::Taper')
+        # Set the script and position for the taper
+        env.set('script', script_taper_in)
         env.set("z", z_)
-    
+
+        # Go back to the model group
+        env.groupscope('::model')
+
+
     def taper_bottom(
         self,
-        name = 'Taper_out',
+        name='Taper_out',
         height: float = 0.35e-6,
         length: float = 19e-6,
         width_in: float = 550e-9,
         width_out: float = 1.1e-6,
         m: float = 7,
         material: str = 'Si3N4 (Silicon Nitride) - Phillip',
-        layout_group_name = "Taper",
-        z_ = -350e-9/2
+        layout_group_name="Taper",
+        z_=-350e-9 / 2
     ):
+        """
+        Create a bottom taper structure with specified parameters and add it to the simulation environment.
+        
+        Parameters:
+        - name (str): Name of the taper structure. Default is 'Taper_out'.
+        - height (float): Height of the taper structure in meters. Default is 0.35e-6.
+        - length (float): Length of the taper structure in meters. Default is 19e-6.
+        - width_in (float): Input width of the taper structure in meters. Default is 550e-9.
+        - width_out (float): Output width of the taper structure in meters. Default is 1.1e-6.
+        - m (float): Exponent for the taper profile. Default is 7.
+        - material (str): Material of the taper structure. Default is 'Si3N4 (Silicon Nitride) - Phillip'.
+        - layout_group_name (str): Name of the layout group. Default is 'Taper'.
+        - z_ (float): Z-coordinate of the center of the taper structure. Default is -350e-9 / 2.
+        
+        This method creates a bottom taper structure with the specified dimensions and material,
+        and adds it to the simulation environment. The taper profile is defined by the exponent m.
+        """
         env = self.env
 
-        #Script
+        # Script for creating the taper
         script_taper_out = '''        
-    res = 5000; #resolution of polygon
-    xspan = linspace(-len/2,len/2,res);
-    a = (w1/2 - w2/2)/len^m;
-    yspan = a * (len*0.5 - xspan)^m + w2/2;
-    
-    V = matrix(2*res,2);
-    #[x,y] points
-    V(1:2*res,1) = [xspan, flip(xspan,1)]; 
-    V(1:2*res,2) = [-yspan , flip(yspan,1)];
-    
-    addpoly;
-    set("name", "taper");
-    set("x",0);
-    set("y",0);
-    set("z",0);
-    set("z span",h1);
-    set("vertices",V);
-    set("material", mat);
-   
-
-    '''
+        res = 5000; # resolution of polygon
+        xspan = linspace(-len/2, len/2, res);
+        a = (w1/2 - w2/2) / len^m;
+        yspan = a * (len * 0.5 - xspan)^m + w2/2;
         
-        #Taper group
+        V = matrix(2 * res, 2);
+        # [x, y] points
+        V(1:2 * res, 1) = [xspan, flip(xspan, 1)]; 
+        V(1:2 * res, 2) = [-yspan, flip(yspan, 1)];
+        
+        addpoly;
+        set("name", "taper");
+        set("x", 0);
+        set("y", 0);
+        set("z", 0);
+        set("z span", h1);
+        set("vertices", V);
+        set("material", mat);
+        '''
+
+        # Create taper structure group
         env.addstructuregroup()
-        env.set('name',name)
+        env.set('name', name)
         env.set('construction group', 1)
         env.addtogroup(layout_group_name)
 
-        #Taper 
-        env.adduserprop('len',2,length)
-        env.adduserprop('h1',2,height)
-        env.adduserprop('w1',2,width_in)
-        env.adduserprop('w2',2,width_out)
-        env.adduserprop('m',0,m)
-        env.adduserprop('mat',1,material)
+        # Add user properties for the taper
+        env.adduserprop('len', 2, length)
+        env.adduserprop('h1', 2, height)
+        env.adduserprop('w1', 2, width_in)
+        env.adduserprop('w2', 2, width_out)
+        env.adduserprop('m', 0, m)
+        env.adduserprop('mat', 1, material)
 
-
-        env.set('script',script_taper_out)
+        # Set the script and position for the taper
+        env.set('script', script_taper_out)
         env.set("z", z_)
-    
-    
+
+        # Go back to the model group
+        env.groupscope('::model')
+
+
     @property
     def env(self):
-        return self._env  
+        """
+        Return the simulation environment.
+        """
+        return self._env
 
     
 
