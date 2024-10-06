@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>waveguides_simulations module &mdash; Adiabatic Taper 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="taperDesigner module" href="taperDesigner.html" />
+    <link rel="prev" title="Adiabatic Taper documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Adiabatic Taper
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">waveguides_simulations module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#waveguides_simulations.GeomBuilder"><code class="docutils literal notranslate"><span class="pre">GeomBuilder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.GeomBuilder.input_wg"><code class="docutils literal notranslate"><span class="pre">GeomBuilder.input_wg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.GeomBuilder.output_wg"><code class="docutils literal notranslate"><span class="pre">GeomBuilder.output_wg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.GeomBuilder.taper_bottom"><code class="docutils literal notranslate"><span class="pre">GeomBuilder.taper_bottom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.GeomBuilder.taper_top"><code class="docutils literal notranslate"><span class="pre">GeomBuilder.taper_top()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#waveguides_simulations.LumObj"><code class="docutils literal notranslate"><span class="pre">LumObj</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.LumObj.add_to_configuration"><code class="docutils literal notranslate"><span class="pre">LumObj.add_to_configuration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.LumObj.configuration"><code class="docutils literal notranslate"><span class="pre">LumObj.configuration</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.LumObj.env"><code class="docutils literal notranslate"><span class="pre">LumObj.env</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.LumObj.update_configuration"><code class="docutils literal notranslate"><span class="pre">LumObj.update_configuration()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#waveguides_simulations.LumSimulation"><code class="docutils literal notranslate"><span class="pre">LumSimulation</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.LumSimulation.add_mesh"><code class="docutils literal notranslate"><span class="pre">LumSimulation.add_mesh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.LumSimulation.add_monitors"><code class="docutils literal notranslate"><span class="pre">LumSimulation.add_monitors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.LumSimulation.add_simulation_region"><code class="docutils literal notranslate"><span class="pre">LumSimulation.add_simulation_region()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.LumSimulation.run_simulation"><code class="docutils literal notranslate"><span class="pre">LumSimulation.run_simulation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#waveguides_simulations.WaveguideModeFinder"><code class="docutils literal notranslate"><span class="pre">WaveguideModeFinder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.WaveguideModeFinder.add_mesh"><code class="docutils literal notranslate"><span class="pre">WaveguideModeFinder.add_mesh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.WaveguideModeFinder.add_simulation_region"><code class="docutils literal notranslate"><span class="pre">WaveguideModeFinder.add_simulation_region()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.WaveguideModeFinder.get_sim_result"><code class="docutils literal notranslate"><span class="pre">WaveguideModeFinder.get_sim_result()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#waveguides_simulations.WaveguideModeFinder.run_simulation"><code class="docutils literal notranslate"><span class="pre">WaveguideModeFinder.run_simulation()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="taperDesigner.html">taperDesigner module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis_wg.html">analysis_wg module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FDE_sim_wg_input.html">FDE_sim_wg_input module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Sweep_generator.html">Sweep_generator module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Adiabatic Taper</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">waveguides_simulations module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/waveguides_simulations.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-waveguides_simulations">
+<span id="waveguides-simulations-module"></span><h1>waveguides_simulations module<a class="headerlink" href="#module-waveguides_simulations" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="waveguides_simulations.GeomBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">waveguides_simulations.</span></span><span class="sig-name descname"><span class="pre">GeomBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.GeomBuilder" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#waveguides_simulations.LumObj" title="waveguides_simulations.LumObj"><code class="xref py py-class docutils literal notranslate"><span class="pre">LumObj</span></code></a></p>
+<p>GeomBuilder class for creating and configuring geometric structures in the simulation environment.
+Inherits from LumObj.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>env</strong> (<em>lumapi.MODE</em><em> or </em><em>similar</em>) – The simulation environment object.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="waveguides_simulations.GeomBuilder.input_wg">
+<span class="sig-name descname"><span class="pre">input_wg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'InP_input_wg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_bottom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SiN_input_wg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'InP</span> <span class="pre">-</span> <span class="pre">Palik'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_bottom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Si3N4</span> <span class="pre">(Silicon</span> <span class="pre">Nitride)</span> <span class="pre">-</span> <span class="pre">Phillip'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SiO2</span> <span class="pre">(Glass)</span> <span class="pre">-</span> <span class="pre">Palik'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width_top</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.5e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width_bottom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.5e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height_top</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.13e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height_bottom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.5e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_top</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_bottom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout_group_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Input</span> <span class="pre">Waveguide'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.GeomBuilder.input_wg" title="Link to this definition"></a></dt>
+<dd><p>Create input waveguides and add them to the simulation environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name_top</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the top waveguide, defaults to “InP_input_wg”.</p></li>
+<li><p><strong>name_bottom</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the bottom waveguide, defaults to “SiN_input_wg”.</p></li>
+<li><p><strong>material_top</strong> (<em>str</em><em>, </em><em>optional</em>) – Material of the top waveguide, defaults to “InP - Palik”.</p></li>
+<li><p><strong>material_bottom</strong> (<em>str</em><em>, </em><em>optional</em>) – Material of the bottom waveguide, defaults to “Si3N4 (Silicon Nitride) - Phillip”.</p></li>
+<li><p><strong>material_background</strong> (<em>str</em><em>, </em><em>optional</em>) – Background material, defaults to “SiO2 (Glass) - Palik”.</p></li>
+<li><p><strong>width_top</strong> (<em>float</em><em>, </em><em>optional</em>) – Width of the top waveguide, defaults to 550e-9.</p></li>
+<li><p><strong>width_bottom</strong> (<em>float</em><em>, </em><em>optional</em>) – Width of the bottom waveguide, defaults to 550e-9.</p></li>
+<li><p><strong>height_top</strong> (<em>float</em><em>, </em><em>optional</em>) – Height of the top waveguide, defaults to 313e-9.</p></li>
+<li><p><strong>height_bottom</strong> (<em>float</em><em>, </em><em>optional</em>) – Height of the bottom waveguide, defaults to 350e-9.</p></li>
+<li><p><strong>length_top</strong> (<em>float</em><em>, </em><em>optional</em>) – Length of the top waveguide, defaults to 10e-6.</p></li>
+<li><p><strong>length_bottom</strong> (<em>float</em><em>, </em><em>optional</em>) – Length of the bottom waveguide, defaults to 10e-6.</p></li>
+<li><p><strong>x</strong> (<em>float</em><em>, </em><em>optional</em>) – X-coordinate of the center, defaults to 0.</p></li>
+<li><p><strong>y</strong> (<em>float</em><em>, </em><em>optional</em>) – Y-coordinate of the center, defaults to 0.</p></li>
+<li><p><strong>z</strong> (<em>float</em><em>, </em><em>optional</em>) – Z-coordinate of the center, defaults to 0.</p></li>
+<li><p><strong>x_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Minimum X-coordinate, defaults to None.</p></li>
+<li><p><strong>y_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Minimum Y-coordinate, defaults to None.</p></li>
+<li><p><strong>z_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Minimum Z-coordinate, defaults to None.</p></li>
+<li><p><strong>layout_group_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Layout group name, defaults to “Input Waveguide”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="waveguides_simulations.GeomBuilder.output_wg">
+<span class="sig-name descname"><span class="pre">output_wg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Output_wg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Si3N4</span> <span class="pre">(Silicon</span> <span class="pre">Nitride)</span> <span class="pre">-</span> <span class="pre">Phillip'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.5e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout_group_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Output</span> <span class="pre">Waveguide'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.GeomBuilder.output_wg" title="Link to this definition"></a></dt>
+<dd><p>Create an output waveguide with specified parameters and add it to the simulation environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the output waveguide, defaults to ‘Output_wg’.</p></li>
+<li><p><strong>material</strong> (<em>str</em><em>, </em><em>optional</em>) – Material of the output waveguide, defaults to ‘Si3N4 (Silicon Nitride) - Phillip’.</p></li>
+<li><p><strong>width</strong> (<em>float</em><em>, </em><em>optional</em>) – Width of the output waveguide, defaults to 1100e-9.</p></li>
+<li><p><strong>height</strong> (<em>float</em><em>, </em><em>optional</em>) – Height of the output waveguide, defaults to 350e-9.</p></li>
+<li><p><strong>length</strong> (<em>float</em><em>, </em><em>optional</em>) – Length of the output waveguide, defaults to 2e-6.</p></li>
+<li><p><strong>x</strong> (<em>float</em><em>, </em><em>optional</em>) – X-coordinate of the center, defaults to 0.</p></li>
+<li><p><strong>y</strong> (<em>float</em><em>, </em><em>optional</em>) – Y-coordinate of the center, defaults to 0.</p></li>
+<li><p><strong>z</strong> (<em>float</em><em>, </em><em>optional</em>) – Z-coordinate of the center, defaults to 0.</p></li>
+<li><p><strong>x_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Minimum X-coordinate, defaults to None.</p></li>
+<li><p><strong>y_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Minimum Y-coordinate, defaults to None.</p></li>
+<li><p><strong>z_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Minimum Z-coordinate, defaults to None.</p></li>
+<li><p><strong>layout_group_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Layout group name, defaults to “Output Waveguide”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="waveguides_simulations.GeomBuilder.taper_bottom">
+<span class="sig-name descname"><span class="pre">taper_bottom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Taper_out'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.5e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.9e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.5e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Si3N4</span> <span class="pre">(Silicon</span> <span class="pre">Nitride)</span> <span class="pre">-</span> <span class="pre">Phillip'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout_group_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Taper'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1.75e-07</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.GeomBuilder.taper_bottom" title="Link to this definition"></a></dt>
+<dd><p>Create a bottom taper structure with specified parameters and add it to the simulation environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the taper structure, defaults to ‘Taper_out’.</p></li>
+<li><p><strong>height</strong> (<em>float</em><em>, </em><em>optional</em>) – Height of the taper structure, defaults to 0.35e-6.</p></li>
+<li><p><strong>length</strong> (<em>float</em><em>, </em><em>optional</em>) – Length of the taper structure, defaults to 19e-6.</p></li>
+<li><p><strong>width_in</strong> (<em>float</em><em>, </em><em>optional</em>) – Input width of the taper structure, defaults to 550e-9.</p></li>
+<li><p><strong>width_out</strong> (<em>float</em><em>, </em><em>optional</em>) – Output width of the taper structure, defaults to 1.1e-6.</p></li>
+<li><p><strong>m</strong> (<em>float</em><em>, </em><em>optional</em>) – Exponent for the taper profile, defaults to 7.</p></li>
+<li><p><strong>material</strong> (<em>str</em><em>, </em><em>optional</em>) – Material of the taper structure, defaults to ‘Si3N4 (Silicon Nitride) - Phillip’.</p></li>
+<li><p><strong>layout_group_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Layout group name, defaults to “Taper”.</p></li>
+<li><p><strong>z</strong> (<em>float</em><em>, </em><em>optional</em>) – Z-coordinate of the center of the taper, defaults to -350e-9 / 2.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="waveguides_simulations.GeomBuilder.taper_top">
+<span class="sig-name descname"><span class="pre">taper_top</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Taper_in'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.13e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.9e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.5e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'InP</span> <span class="pre">-</span> <span class="pre">Palik'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout_group_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Taper'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.565e-07</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.GeomBuilder.taper_top" title="Link to this definition"></a></dt>
+<dd><p>Create a top taper structure with specified parameters and add it to the simulation environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the taper structure, defaults to ‘Taper_in’.</p></li>
+<li><p><strong>height</strong> (<em>float</em><em>, </em><em>optional</em>) – Height of the taper structure, defaults to 313e-9.</p></li>
+<li><p><strong>length</strong> (<em>float</em><em>, </em><em>optional</em>) – Length of the taper structure, defaults to 19e-6.</p></li>
+<li><p><strong>width_in</strong> (<em>float</em><em>, </em><em>optional</em>) – Input width of the taper structure, defaults to 550e-9.</p></li>
+<li><p><strong>width_out</strong> (<em>float</em><em>, </em><em>optional</em>) – Output width of the taper structure, defaults to 50e-9.</p></li>
+<li><p><strong>material</strong> (<em>str</em><em>, </em><em>optional</em>) – Material of the taper structure, defaults to ‘InP - Palik’.</p></li>
+<li><p><strong>m</strong> (<em>float</em><em>, </em><em>optional</em>) – Exponent for the taper profile, defaults to 0.8.</p></li>
+<li><p><strong>layout_group_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Layout group name, defaults to “Taper”.</p></li>
+<li><p><strong>z</strong> (<em>float</em><em>, </em><em>optional</em>) – Z-coordinate of the center of the taper, defaults to 313e-9 / 2.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="waveguides_simulations.LumObj">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">waveguides_simulations.</span></span><span class="sig-name descname"><span class="pre">LumObj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.LumObj" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for handling interactions with the simulation environment and managing object configurations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>env</strong> (<em>lumapi.MODE</em><em> or </em><em>similar</em>) – The simulation environment object (e.g., Lumerical MODE).</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="waveguides_simulations.LumObj.add_to_configuration">
+<span class="sig-name descname"><span class="pre">add_to_configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_element_configuration</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.LumObj.add_to_configuration" title="Link to this definition"></a></dt>
+<dd><p>Add new elements to the existing configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_element_configuration</strong> (<em>tuple</em>) – A tuple representing the configuration to add.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="waveguides_simulations.LumObj.configuration">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">configuration</span></span><a class="headerlink" href="#waveguides_simulations.LumObj.configuration" title="Link to this definition"></a></dt>
+<dd><p>Return the current configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current configuration.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="waveguides_simulations.LumObj.env">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">env</span></span><a class="headerlink" href="#waveguides_simulations.LumObj.env" title="Link to this definition"></a></dt>
+<dd><p>Return the simulation environment object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The simulation environment.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>lumapi.MODE or similar</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="waveguides_simulations.LumObj.update_configuration">
+<span class="sig-name descname"><span class="pre">update_configuration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.LumObj.update_configuration" title="Link to this definition"></a></dt>
+<dd><p>Update the configuration for each object with its corresponding parameters.
+This method applies stored configurations (name and parameter values) to the environment objects.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="waveguides_simulations.LumSimulation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">waveguides_simulations.</span></span><span class="sig-name descname"><span class="pre">LumSimulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.LumSimulation" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#waveguides_simulations.LumObj" title="waveguides_simulations.LumObj"><code class="xref py py-class docutils literal notranslate"><span class="pre">LumObj</span></code></a></p>
+<p>LumSimulation class for handling simulation-specific actions in the environment.
+Inherits from LumObj.</p>
+<p>This class provides methods to add simulation regions, meshes, and monitors, as well as running simulations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>env</strong> (<em>lumapi.MODE</em><em> or </em><em>similar</em>) – The simulation environment object.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="waveguides_simulations.LumSimulation.add_mesh">
+<span class="sig-name descname"><span class="pre">add_mesh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.LumSimulation.add_mesh" title="Link to this definition"></a></dt>
+<dd><p>Add a mesh to the simulation environment.</p>
+<p>This is a placeholder method that should be implemented in derived classes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="waveguides_simulations.LumSimulation.add_monitors">
+<span class="sig-name descname"><span class="pre">add_monitors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.LumSimulation.add_monitors" title="Link to this definition"></a></dt>
+<dd><p>Add monitors to the simulation environment.</p>
+<p>This is a placeholder method that should be implemented in derived classes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="waveguides_simulations.LumSimulation.add_simulation_region">
+<span class="sig-name descname"><span class="pre">add_simulation_region</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.LumSimulation.add_simulation_region" title="Link to this definition"></a></dt>
+<dd><p>Add a simulation region to the environment.</p>
+<p>This is a placeholder method that should be implemented in derived classes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="waveguides_simulations.LumSimulation.run_simulation">
+<span class="sig-name descname"><span class="pre">run_simulation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.LumSimulation.run_simulation" title="Link to this definition"></a></dt>
+<dd><p>Run the simulation in the environment.</p>
+<p>This is a placeholder method that should be implemented in derived classes.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="waveguides_simulations.WaveguideModeFinder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">waveguides_simulations.</span></span><span class="sig-name descname"><span class="pre">WaveguideModeFinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.WaveguideModeFinder" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#waveguides_simulations.LumSimulation" title="waveguides_simulations.LumSimulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">LumSimulation</span></code></a></p>
+<p>WaveguideModeFinder class for setting up and running waveguide mode simulations.
+Inherits from LumSimulation.</p>
+<p>This class provides methods for defining a simulation region, setting up a mesh, and extracting mode-finding results from the environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>env</strong> (<em>lumapi.MODE</em><em> or </em><em>similar</em>) – The simulation environment object.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="waveguides_simulations.WaveguideModeFinder.add_mesh">
+<span class="sig-name descname"><span class="pre">add_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width_mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height_mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.WaveguideModeFinder.add_mesh" title="Link to this definition"></a></dt>
+<dd><p>Add a mesh to the simulation region.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width_mesh</strong> (<em>float</em><em>, </em><em>optional</em>) – Width of the mesh, defaults to 2e-6.</p></li>
+<li><p><strong>height_mesh</strong> (<em>float</em><em>, </em><em>optional</em>) – Height of the mesh, defaults to 2e-6.</p></li>
+<li><p><strong>length_mesh</strong> (<em>float</em><em>, </em><em>optional</em>) – Length of the mesh, defaults to 0.0.</p></li>
+<li><p><strong>x</strong> (<em>float</em><em>, </em><em>optional</em>) – X-coordinate of the mesh center, defaults to 0.</p></li>
+<li><p><strong>y</strong> (<em>float</em><em>, </em><em>optional</em>) – Y-coordinate of the mesh center, defaults to 0.</p></li>
+<li><p><strong>z</strong> (<em>float</em><em>, </em><em>optional</em>) – Z-coordinate of the mesh center, defaults to 0.</p></li>
+<li><p><strong>dx</strong> (<em>float</em><em>, </em><em>optional</em>) – Mesh resolution in the x-direction, defaults to 10e-9.</p></li>
+<li><p><strong>dy</strong> (<em>float</em><em>, </em><em>optional</em>) – Mesh resolution in the y-direction, defaults to 10e-9.</p></li>
+<li><p><strong>dz</strong> (<em>float</em><em>, </em><em>optional</em>) – Mesh resolution in the z-direction, defaults to 10e-9.</p></li>
+<li><p><strong>N</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of divisions in the mesh. If provided, dx, dy, and dz will be automatically computed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="waveguides_simulations.WaveguideModeFinder.add_simulation_region">
+<span class="sig-name descname"><span class="pre">add_simulation_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width_simulation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height_simulation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.55e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_background</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'SiO2</span> <span class="pre">(Glass)</span> <span class="pre">-</span> <span class="pre">Palik'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_condition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'PML'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_trial_modes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.WaveguideModeFinder.add_simulation_region" title="Link to this definition"></a></dt>
+<dd><p>Add a simulation region to the environment for the mode finder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width_simulation</strong> (<em>float</em><em>, </em><em>optional</em>) – Width of the simulation region, defaults to 4e-6.</p></li>
+<li><p><strong>height_simulation</strong> (<em>float</em><em>, </em><em>optional</em>) – Height of the simulation region, defaults to 4e-6.</p></li>
+<li><p><strong>x</strong> (<em>float</em><em>, </em><em>optional</em>) – X-coordinate of the simulation region, defaults to 0.</p></li>
+<li><p><strong>y</strong> (<em>float</em><em>, </em><em>optional</em>) – Y-coordinate of the simulation region, defaults to 0.</p></li>
+<li><p><strong>z</strong> (<em>float</em><em>, </em><em>optional</em>) – Z-coordinate of the simulation region, defaults to 0.</p></li>
+<li><p><strong>lambda_0</strong> (<em>float</em><em>, </em><em>optional</em>) – Operating wavelength, defaults to 1550e-9.</p></li>
+<li><p><strong>material_background</strong> (<em>str</em><em>, </em><em>optional</em>) – Background material, defaults to “SiO2 (Glass) - Palik”.</p></li>
+<li><p><strong>boundary_condition</strong> (<em>str</em><em>, </em><em>optional</em>) – Boundary condition type (e.g., “PML”), defaults to “PML”.</p></li>
+<li><p><strong>number_of_trial_modes</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of trial modes to compute, defaults to 10.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="waveguides_simulations.WaveguideModeFinder.get_sim_result">
+<span class="sig-name descname"><span class="pre">get_sim_result</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.WaveguideModeFinder.get_sim_result" title="Link to this definition"></a></dt>
+<dd><p>Retrieve the simulation results including effective refractive index and TE polarization fraction.</p>
+<p>This method extracts the effective refractive index (neff) and TE polarization fraction for each mode found
+in the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Two lists - one containing the effective refractive indices and one containing the TE polarization fractions.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple of list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="waveguides_simulations.WaveguideModeFinder.run_simulation">
+<span class="sig-name descname"><span class="pre">run_simulation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#waveguides_simulations.WaveguideModeFinder.run_simulation" title="Link to this definition"></a></dt>
+<dd><p>Run the waveguide mode simulation in the environment.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Adiabatic Taper documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="taperDesigner.html" class="btn btn-neutral float-right" title="taperDesigner module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Enrico Vallar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
