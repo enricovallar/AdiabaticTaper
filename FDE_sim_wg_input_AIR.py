@@ -16,10 +16,10 @@ import matplotlib.pyplot as plt
 
 
 
-PATH_MODELS = rf"D:\WG\models_mg_inputs"
+PATH_MODELS = rf"D:\WG\models_wg_inputs_air"
 FILE_NAME   = rf"input_wg_height_width"
 PATH_DATA   = rf"D:\WG\data"
-DATA_FILE_NAME = "wg_input_data.pickle"
+DATA_FILE_NAME = "wg_input_data_air.pickle"
 
 try:
     os.mkdir(PATH_MODELS)
@@ -32,13 +32,13 @@ height_SiN = 350e-9
 
 
 width_start = 250
-width_stop  = 1000
+width_stop  = 800
 width_step = 25
 width_array = np.arange(width_start, width_stop+width_step, width_step)*1e-9
 
 
 height_start = 150
-height_end   = 1000
+height_end   = 700
 height_step = 25
 height_array = np.arange(height_start, height_end, height_step)*1e-9
 
@@ -52,10 +52,12 @@ data_points = []
 i=0
 j=0
 
+env = lumapi.MODE()
+env.save(f"{PATH_MODELS}/{FILE_NAME}_0_0")
 for j,height in enumerate(height_array):
     for i,width in enumerate(width_array):
         
-        env = lumapi.MODE()  
+          
 
         layoutmode_ = env.layoutmode()
         if layoutmode_ == 0:
@@ -63,19 +65,19 @@ for j,height in enumerate(height_array):
         env.deleteall()
         print(f"Starting with width: {width}")
         geom = GeomBuilder(env)
-        geom.input_wg(width_top = width, width_bottom=width, height_top=height) # <------------DEFINE THE GEOMETRY
-
+        geom.output_wg(width= width, height=height, material="InP - Palik") # <------------DEFINE THE GEOMETRY
+    
         
         env.groupscope("::model")
 
         sim = WaveguideModeFinder(env)
-        sim.add_simulation_region(width_simulation = 4* width, height_simulation=4*(height+height_SiN), number_of_trial_modes=20)
-        sim.add_mesh(width_mesh= 2*width, height_mesh=2*(height+height_SiN), N=300)
+        sim.add_simulation_region(width_simulation = 4* width, height_simulation=4*(height), number_of_trial_modes=20, material_background=None)
+        sim.add_mesh(width_mesh= 2*width, height_mesh=2*(height), N=300)
         
 
 
         print("Saving model before simulation...")
-        env.save(f"{PATH_MODELS}/{FILE_NAME}_{j}_{i}")
+        env.save(f"{FILE_NAME}_{j}_{i}")
         print("Simulating...")
 
         env.run()
@@ -88,14 +90,14 @@ for j,height in enumerate(height_array):
 
         print("Saving model after simulation...")
         env.save(f"{FILE_NAME}_{j}_{i}")
-        env.close()
+        
 
         data_points.append( {
             "width" : width, 
             "height": height, 
             "found_modes": found_modes, 
         })
-
+#%%
 if os.path.exists(f"{PATH_DATA}\{DATA_FILE_NAME}"):
     os.remove(f"{PATH_DATA}\{DATA_FILE_NAME}")
 
@@ -106,8 +108,66 @@ with open(f"{PATH_DATA}\{DATA_FILE_NAME}", 'wb') as file:
                  file)   
 
 print("data_saved")
-#%%
+ #%%
 
+
+# #___________________________________________________
+# import pickle
+# import os
+# import importlib.util
+# #The default paths for windows
+# spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
+# #Functions that perform the actual loading
+# lumapi = importlib.util.module_from_spec(spec_win) # 
+# spec_win.loader.exec_module(lumapi)
+# import numpy as np
+
+# PATH_MODELS = rf"D:\WG\models_wg_inputs_air"
+# FILE_NAME   = rf"input_wg_height_width"
+# PATH_DATA   = rf"D:\WG\data"
+# DATA_FILE_NAME = "wg_input_data_air.pickle"
+
+
+
+
+# width_start = 250
+# width_stop  = 1000
+# width_step = 25
+# width_array = np.arange(width_start, width_stop+width_step, width_step)*1e-9
+
+
+# height_start = 150
+# height_end   = 1000
+# height_step = 25
+# height_array = np.arange(height_start, height_end, height_step)*1e-9
+
+
+# env = lumapi.MODE()
+# env.load(f"{PATH_MODELS}\{FILE_NAME}_0_0")
+
+# data_points=[]
+# k = 0
+# for j, height in enumerate(height_array):
+#     for i, width in enumerate(width_array):
+
+#         env.load(f"{FILE_NAME}_{j}_{i}")
+#         found_modes =[]
+#         mode_counter = 0
+#         while True:
+#             count = mode_counter+1
+#             try:
+#                 _ = env.getdata(f"FDE::data::mode{count}")
+#                 mode_counter = count
+#             except:
+#                 break
+#         found_modes = mode_counter
+#         data_points.append( {
+#             "width" : width, 
+#             "height": height, 
+#             "found_modes": found_modes, 
+#         })
+#         print(f"for w={width/1e-9: .0f} and h={height/1e-9:.0f} I found {found_modes} modes")
+#%%
 
 #___________________________________________________
 import pickle
@@ -120,86 +180,23 @@ lumapi = importlib.util.module_from_spec(spec_win) #
 spec_win.loader.exec_module(lumapi)
 import numpy as np
 
-PATH_MODELS = rf"D:\WG\models_mg_inputs"
+PATH_MODELS = rf"D:\WG\models_wg_inputs_air"
 FILE_NAME   = rf"input_wg_height_width"
 PATH_DATA   = rf"D:\WG\data"
-DATA_FILE_NAME = "wg_input_data.pickle"
-
-
-
-
-width_start = 250
-width_stop  = 1000
-width_step = 25
-width_array = np.arange(width_start, width_stop+width_step, width_step)*1e-9
-
-
-height_start = 150
-height_end   = 1000
-height_step = 25
-height_array = np.arange(height_start, height_end, height_step)*1e-9
-
+DATA_FILE_NAME = "wg_input_data_air.pickle"
 
 env = lumapi.MODE()
 env.load(f"{PATH_MODELS}\{FILE_NAME}_0_0")
 
-data_points=[]
-k = 0
-for j, height in enumerate(height_array):
-    for i, width in enumerate(width_array):
 
-        env.load(f"{FILE_NAME}_{j}_{i}")
-        found_modes =[]
-        mode_counter = 0
-        while True:
-            count = mode_counter+1
-            try:
-                _ = env.getdata(f"FDE::data::mode{count}")
-                mode_counter = count
-            except:
-                break
-        found_modes = mode_counter
-        data_points.append( {
-            "width" : width, 
-            "height": height, 
-            "found_modes": found_modes, 
-        })
-        print(f"for w={width/1e-9: .0f} and h={height/1e-9:.0f} I found {found_modes} modes")
-#%%
-
-#___________________________________________________
-import pickle
-import os
-import importlib.util
-#The default paths for windows
-spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
-#Functions that perform the actual loading
-lumapi = importlib.util.module_from_spec(spec_win) # 
-spec_win.loader.exec_module(lumapi)
-import numpy as np
-
-PATH_MODELS = rf"D:\WG\models_mg_inputs"
-FILE_NAME   = rf"input_wg_height_width"
-PATH_DATA   = rf"D:\WG\data"
-DATA_FILE_NAME = "wg_input_data.pickle"
-width_start = 250
-width_stop  = 1000
-width_step = 25
-width_array = np.arange(width_start, width_stop+width_step, width_step)*1e-9
-
-
-height_start = 150
-height_end   = 1000
-height_step = 25
-height_array = np.arange(height_start, height_end, height_step)*1e-9
-env = lumapi.MODE()
-env.load(f"{PATH_MODELS}\{FILE_NAME}_0_0")
-
-
-with open(f"{PATH_DATA}\{DATA_FILE_NAME}1", 'rb') as file:
+with open(f"{PATH_DATA}\{DATA_FILE_NAME}", 'rb') as file:
     loaded_data = pickle.load(file)
     file.close()
-data_points = loaded_data
+data_points = loaded_data["data_points"]
+width_array = loaded_data["width_array"]
+height_array = loaded_data["height_array"]
+
+
 from analysis_wg_2 import Analysis_wg
 
 k = 0
@@ -237,27 +234,30 @@ for j, height in enumerate(height_array):
    
 
 
-    
-
-
-#%%
-PATH_MODELS = rf"D:\WG\models_mg_inputs"
-FILE_NAME   = rf"input_wg_height_width"
-PATH_DATA   = rf"D:\WG\data"
-DATA_FILE_NAME = "wg_input_data.pickle"
-
 if os.path.exists(f"{PATH_DATA}\{DATA_FILE_NAME}"):
     os.remove(f"{PATH_DATA}\{DATA_FILE_NAME}")
 
+with open(f"{PATH_DATA}\{DATA_FILE_NAME}", 'wb') as file:
+    pickle.dump({"data_points": data_points, 
+                 "height_array": height_array, 
+                 "width_array": width_array}, 
+                 file)   
+    
+#%%
 
+PATH_DATA= rf"D:\WG\working_data"
+if os.path.exists(f"{PATH_DATA}\{DATA_FILE_NAME}"):
+    os.remove(f"{PATH_DATA}\{DATA_FILE_NAME}")
 
-with open(f"{PATH_DATA}\{DATA_FILE_NAME}1", 'wb') as file:
-    pickle.dump( data_points, file)
-
+with open(f"{PATH_DATA}\{DATA_FILE_NAME}", 'wb') as file:
+    pickle.dump({"data_points": data_points, 
+                 "height_array": height_array, 
+                 "width_array": width_array}, 
+                 file)   
 
 
 # %%
-#______________LOAD DATA_________________________________________________________________________
+#__________________LOAD DATA___________________________________________
 import pickle
 import os
 import importlib.util
@@ -268,18 +268,24 @@ lumapi = importlib.util.module_from_spec(spec_win) #
 spec_win.loader.exec_module(lumapi)
 import numpy as np
 
-PATH_MODELS = rf"D:\WG\models_mg_inputs"
+PATH_MODELS = rf"D:\WG\models_wg_inputs_air"
 FILE_NAME   = rf"input_wg_height_width"
 PATH_DATA   = rf"D:\WG\working_data"
-DATA_FILE_NAME = "wg_input_data.pickle"
-NAME_SPEC="_glass"
+DATA_FILE_NAME = "wg_input_data_air.pickle"
+
 
 
 with open(f"{PATH_DATA}\{DATA_FILE_NAME}", 'rb') as file:
-    data_points = pickle.load(file)
+    loaded_data = pickle.load(file)
+
+data_points = loaded_data["data_points"]
+height_array = loaded_data["height_array"]
+width_array = loaded_data["width_array"]
 
 
-#_______DATA_TO_PLOT_________________
+
+#_________________DATA TO PLOT_____________________________________________________
+NAME_SPEC ="_air"
 from analysis_wg_2 import Analysis_wg
 widths, heights, modes = Analysis_wg.find_te_modes_with_highest_neff(data_points)
 
@@ -295,9 +301,9 @@ for mode in modes:
 
 #____PLOTS___________________________
 import matplotlib.pyplot as plt
-title = "InP over SiN in Glass"
+title = "InP waveguide in air"
 
-# ____PLOT BETA MAP________________________
+# ____PLOT Beta MAP________________________
 fig, ax = plt.subplots(figsize=(8, 6), dpi = 300)
 fig.tight_layout()
 max_width, max_height, max_y, max_z, corresponding_mode = Analysis_wg.map_beta(plottable_results, modes, ax, title)
@@ -305,18 +311,17 @@ Analysis_wg.plot_cutoff_line(data_points, ax)
 print(f"Max $\\beta$-factor occurs at Width: {max_width} µm, Height: {max_height} µm, QD Position (y, z): ({max_y} nm, {max_z} nm)")
 plt.savefig(fr"{PATH_DATA}\map_beta{NAME_SPEC}.png", dpi=300, bbox_inches='tight')
 
-# ____PLOT TE FRACTION MAP________________________
+# ____PLOT TE fraction MAP________________________
 fig, ax = plt.subplots(figsize=(8, 6), dpi = 300)
 fig.tight_layout()
 Analysis_wg.map_TE_fraction(plottable_results, ax, title)
 Analysis_wg.plot_cutoff_line(data_points, ax)
 plt.savefig(fr"{PATH_DATA}\map_TE_fraction{NAME_SPEC}.png", dpi=300, bbox_inches='tight')
 
-
 #__PLOT BETA___________________________
 fig, ax = plt.subplots(figsize=(8, 6), dpi = 300)
 Analysis_wg.plot_beta_vs_yz(
-    corresponding_mode, ax, title,  y_span=2, z_span=2, height_bot=350e-9, 
+    corresponding_mode, ax, title= title,  y_span=2, z_span=4, height_bot=0, 
     colormap='inferno', top_rect_color='blue', bottom_rect_color='blue')
 plt.savefig(fr"{PATH_DATA}\beta{NAME_SPEC}.png", dpi=300, bbox_inches='tight')
 plt.show()
@@ -324,9 +329,10 @@ plt.show()
 #_________PLOT FIELD___________________
 fig, ax = plt.subplots(figsize=(8, 6), dpi = 300)
 Analysis_wg.plot_electric_field(
-    corresponding_mode, ax, title,  y_span=2, z_span=2, height_bot=350e-9, 
+    corresponding_mode, ax, title, y_span=2, z_span=4, height_bot=0, 
     colormap='jet', top_rect_color='black', bottom_rect_color='black')
 plt.savefig(fr"{PATH_DATA}\field_intensity{NAME_SPEC}.png", dpi=300, bbox_inches='tight')
 plt.show()
     
+
 # %%

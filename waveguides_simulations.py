@@ -304,7 +304,6 @@ class WaveguideModeFinder(LumSimulation):
                         ("y span", width_simulation),
                         ("z span", height_simulation), 
                         ("wavelength", lambda_0),
-                        ("background material", material_background),
                         ("y min bc", boundary_condition),
                         ("y max bc", boundary_condition),
                         ("z min bc", boundary_condition),
@@ -314,6 +313,9 @@ class WaveguideModeFinder(LumSimulation):
 
         self.add_to_configuration(configuration_simulation)
         self.update_configuration()
+        if material_background is not None: 
+            self.env.setnamed("FDE", "background material", material_background)
+
 
 
     def add_mesh(
