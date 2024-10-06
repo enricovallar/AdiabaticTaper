@@ -1,7 +1,8 @@
 # Import Modules
 import importlib.util
+import configuration
 # The default paths for windows
-spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
+spec_win = importlib.util.spec_from_file_location('lumapi', configuration.LUMERICAL_API_PATH)
 # Functions that perform the actual loading
 lumapi = importlib.util.module_from_spec(spec_win)
 spec_win.loader.exec_module(lumapi)
@@ -223,8 +224,9 @@ if __name__ == '__main__':
     # Import Modules
     import importlib.util
     # The default paths for windows
-    spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\Lumerical\\v242\\api\\python\\lumapi.py')
+    import configuration
     # Functions that perform the actual loading
+    spec_win = importlib.util.spec_from_file_location('lumapi', configuration.LUMERICAL_API_PATH)
     lumapi = importlib.util.module_from_spec(spec_win)
     spec_win.loader.exec_module(lumapi)
     import pickle
