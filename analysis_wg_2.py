@@ -125,54 +125,7 @@ class Analysis_wg:
         # Calculate the Purcell factors for Ey and Ez
         gamma = (np.abs(Ey)**2) / integrate_Sx*constant_part
         mode_data["gamma"] = gamma
-        
-    
 
-
-    @staticmethod
-    def plot_field(ax, mode_data, title, y_span=None, z_span=None, normalize=False):
-        """
-        Plots the electric field intensity on a given axis with customizable window size centered at zero.
-
-        Parameters:
-        - ax: The axis to plot on.
-        - data: A dictionary containing 'y', 'z', and 'E2' keys.
-        - title: The title of the plot.
-        - y_span: The width of the window in the y-direction in micrometers. Default is None (auto).
-        - z_span: The height of the window in the z-direction in micrometers. Default is None (auto).
-        - normalize: Boolean flag to normalize the plot. Default is False.
-        
-        Returns:
-        - pcm: The plot colormesh object for further customization.
-        """
-        # Set axis labels
-        ax.set_xlabel("y (\u00B5m)")
-        ax.set_ylabel("z (\u00B5m)")
-        
-        # Calculate limits centered at zero
-        if y_span is not None:
-            xlim = (-y_span / 2, y_span / 2)
-            ax.set_xlim(xlim)
-        
-        if z_span is not None:
-            ylim = (-z_span / 2, z_span / 2)
-            ax.set_ylim(ylim)
-        
-        
-        if normalize:
-            # Plot the data
-            pcm = ax.pcolormesh(mode_data["y"]*1e6, mode_data["z"]*1e6, np.transpose(mode_data["E2"]), 
-                                shading='gouraud', cmap='jet', norm=Normalize(vmin=0, vmax=1))
-        else:
-            pcm = ax.pcolormesh(mode_data["y"]*1e6, mode_data["z"]*1e6, np.transpose(mode_data["E2"]), 
-                                shading='gouraud', cmap='jet')
-
-        
-        # Set the title
-        ax.set_title(title, fontsize=10)
-        
-        return pcm
-      
    
 
     @staticmethod
@@ -201,388 +154,27 @@ class Analysis_wg:
             # Calculate B using the given formula
             beta = 1 / (1 + (1 + P_sum) / Pn)                
             modes_data[n]["beta"] = beta
-            
+           
 
+    @staticmethod
+    def find_te_modes_with_highest_neff(data_points):
+        modes=[]
+        widths =[]
+        heights=[]
 
-
+        for data_point in data_points:
+            width = data_point["width"]
+            height = data_point["height"]
+            for mode in data_point["modes"]:
+                if mode["te_fraction"]>0.5:
+                    mode["width"] = width
+                    mode["height"] = height
+                    widths.append(width)
+                    heights.append(height)
+                    modes.append(mode)
+                    break
+        return (widths, heights, modes)
     
-    @staticmethod
-    def integrate_beta_in_region(data_array, y_0, z_0, y_span, z_span):
-        """
-        Integrate the beta factor over a specified region of space for each mode in the data array.
-
-        Parameters:
-            data_array (list): A list of dictionaries where each dictionary contains mode data, 
-                            including 'y', 'z', and 'beta_factors'.
-            y_0 (float): Center of the region in the y-direction (in meters).
-            z_0 (float): Center of the region in the z-direction (in meters).
-            y_span (float): Width of the region in the y-direction (in meters).
-            z_span (float): Height of the region in the z-direction (in meters).
-
-        Returns:
-            None: The method adds the integrated beta values for y and z directions to each mode's dictionary within the data array.
-        """
-        # Iterate over each data dictionary in the data_array
-        for data in data_array:
-            for mode in data:
-                # Extract y and z arrays
-                y = mode["y"]
-                z = mode["z"]
-                beta_y = mode["beta_factors"]["beta_y"]
-                beta_z = mode["beta_factors"]["beta_z"]
-
-                # Define the region limits
-                y_min = y_0 - y_span / 2
-                y_max = y_0 + y_span / 2
-                z_min = z_0 - z_span / 2
-                z_max = z_0 + z_span / 2
-
-                # Find indices that are within the specified region
-                y_indices = np.where((y >= y_min) & (y <= y_max))[0]
-                z_indices = np.where((z >= z_min) & (z <= z_max))[0]
-                y_ = y[y_indices]
-                z_ = z[z_indices]
-
-                # Extract the subarray of beta within the specified range
-                beta_subarray_y = beta_y[np.ix_(y_indices, z_indices)]
-                beta_subarray_z = beta_z[np.ix_(y_indices, z_indices)]
-
-                
-
-                # Integrate beta over the specified region
-                beta_integral_y = simps(beta_subarray_y, x=z_, axis=1)
-                beta_integral_y = simps(beta_integral_y, x=y_ )
-
-
-                beta_integral_z = simps(beta_subarray_z, x=z_, axis=1)
-                beta_integral_z = simps(beta_integral_z, x=y_)
-                
-
-
-                # Add the integrated beta values to the mode's dictionary
-                mode["beta_integrals"] = {
-                    "beta_integral_y": beta_integral_y,
-                    "beta_integral_z": beta_integral_z
-                }
-
-
-
-            
-    @staticmethod
-    def normalize_beta_integrals(data_array):
-        """
-        Normalize the beta integrals over a specified set of data.
-
-        Parameters:
-            data_array (list): A list of dictionaries where each dictionary contains mode data, 
-                               including 'beta_integrals' calculated by the integrate_beta_in_region method.
-
-        Returns:
-            None: The method normalizes the beta integrals in place and adds the normalized values to each mode's dictionary.
-        """
-        # Initialize variables to store the maximum beta integrals
-        beta_integral_max = 0
-
-        # First pass: find the global maximum beta integral value
-        for data in data_array:
-            for mode in data: 
-                beta_integrals = mode["beta_integrals"]
-                beta_integral_max = max(beta_integral_max, beta_integrals["beta_integral_y"])
-                beta_integral_max = max(beta_integral_max, beta_integrals["beta_integral_z"])
-
-        # Second pass: normalize the beta integrals
-        for data in data_array: 
-            for mode in data: 
-                beta_integrals = mode["beta_integrals"]
-                beta_integral_y_normalized = beta_integrals["beta_integral_y"] / beta_integral_max
-                beta_integral_z_normalized = beta_integrals["beta_integral_z"] / beta_integral_max
-                beta_integrals_normalized = {
-                    "beta_integral_y_normalized": beta_integral_y_normalized,
-                    "beta_integral_z_normalized": beta_integral_z_normalized
-                }
-                mode["beta_integrals_normalized"] = beta_integrals_normalized
-
-
-    @staticmethod
-    def plot_neff(data_array, width_array, title, subtitle=None):
-        """
-        Plots the effective index (neff) as a function of width for a series of modes.
-        The size of the plot markers is scaled by the normalized beta_integral, and the TE fraction 
-        determines whether to use beta_integral_y_normalized or beta_integral_z_normalized.
-
-        Parameters:
-        - data_array: List of mode data dictionaries.
-        - width_array: List of widths corresponding to the modes.
-        - title: The main title for the plot.
-        - subtitle: Optional subtitle for the plot. Default is None.
-        """
-        plt.figure(figsize=(10, 6))
-        
-        for data, width in zip(data_array, width_array):
-            for mode in data:
-                try:
-                    # Determine whether to use beta_integral_y_normalized or beta_integral_z_normalized
-                    if mode["te_fraction"] > 0.5:
-                        beta_integral_normalized = mode["beta_integrals_normalized"]["beta_integral_y_normalized"]
-                    else:
-                        beta_integral_normalized = mode["beta_integrals_normalized"]["beta_integral_z_normalized"]
-                    
-                    # Scale marker size based on normalized beta_integral
-                    marker_size = beta_integral_normalized * 100  # Adjust this factor for better scaling
-                    
-                    # Determine color based on TE fraction
-                    f = mode["te_fraction"]
-                    color = (f, 0, 1-f)
-                    
-                    # Plot the point
-                    plt.scatter(width/1e-9, mode["neff"].real, color=color, s=marker_size, alpha=0.7)
-                    
-                except KeyError as e:
-                    print(f"Missing data in mode: {e}")
-                    plt.scatter(width/1e-9, None, color='gray')
-
-        plt.grid()
-        plt.xlabel("width [nm]")
-        plt.ylabel("$n_{eff}$")
-        plt.title(f"{title}\n{subtitle}" if subtitle else title)
-
-
-
-
-    
-
-    @staticmethod
-    def normalize_beta_gradients(data_array):
-        """
-        Normalize the beta gradients (gradient_y and gradient_z) over a specified set of data,
-        considering only the points within y_span equal to the width of the mode, centered at 0.
-
-        Parameters:
-            data_array (list): A list of dictionaries where each dictionary contains mode data,
-                            including 'beta_gradients' calculated by the calculate_beta_gradient method.
-
-        Returns:
-            None: The method normalizes the beta gradients in place and adds the normalized values to each mode's dictionary.
-        """
-        # Initialize variable to store the maximum absolute gradient value
-        max_gradient = 0
-
-        # First pass: find the global maximum absolute gradient value within the specified y_span
-        for data in data_array:
-            for mode in data:
-                if "beta_gradients" in mode:
-                    gradients = mode["beta_gradients"]
-                    y = mode["y"]
-                    width = 0.95*mode["width"]
-
-                    # Determine the range of y values that fall within y_span centered at 0
-                    y_min = -width / 2
-                    y_max = width / 2
-
-                    # Find indices that fall within this range
-                    y_indices = np.where((y >= y_min) & (y <= y_max))[0]
-
-                    # Extract the relevant parts of the gradients
-                    gradient_y_filtered = gradients["gradient_y"][y_indices]
-                    gradient_z_filtered = gradients["gradient_z"][y_indices]
-
-                    # Update max_gradient with the maximum value found within the filtered range
-                    max_gradient = max(max_gradient, np.max(np.abs(gradient_y_filtered)))
-                    max_gradient = max(max_gradient, np.max(np.abs(gradient_z_filtered)))
-
-        # Second pass: normalize the beta gradients using the determined max_gradient
-        for data in data_array:
-            for mode in data:
-                if "beta_gradients" in mode:
-                    gradients = mode["beta_gradients"]
-                    y = mode["y"]
-                    width = 0.95*mode["width"]
-
-                    # Determine the range of y values that fall within y_span centered at 0
-                    y_min = -width / 2
-                    y_max = width / 2
-
-                    # Find indices that fall within this range
-                    y_indices = np.where((y >= y_min) & (y <= y_max))[0]
-
-                    # Extract and normalize the relevant parts of the gradients
-                    gradient_y_normalized = gradients["gradient_y"]/ max_gradient
-                    gradient_z_normalized = gradients["gradient_z"]/ max_gradient
-
-                    gradients_normalized = {
-                        "gradient_y": gradient_y_normalized,
-                        "gradient_z": gradient_z_normalized, 
-                        "max_gradient": max_gradient
-                    }
-                    mode["beta_gradients_normalized"] = gradients_normalized
-
-
-
-    @staticmethod
-    def plot_beta_gradient(ax, mode, z_position, title=None, normalize= False, xlim = None):
-        """
-        Plots the gradient of the beta factor (beta_y or beta_z) along the y-axis 
-        at a specific z position for a given mode. The plot is determined by the TE fraction.
-        The gradients are normalized with the same value.
-
-        Parameters:
-        - ax: The matplotlib axis on which to plot the data.
-        - mode: A dictionary containing the mode data, including 'y', 'z', and 'beta_factors'.
-        - z_position: The specific z position (in meters) at which to calculate and plot the gradient.
-        - title: Optional title for the plot. Default is None.
-        - ylim: Tuple (min, max) specifying the limits for the y-axis. Default is None.
-        - xlim: Tuple (min, max) specifying the limits for the x-axis. Default is None.
-        
-        Returns:
-        - None: The function directly plots on the provided axis.
-        """
-        if normalize:
-            beta_gradients = mode["beta_gradients_normalized"]
-            width = mode["width"]/1e-6
-            ylim =(-1,1)
-            ax.set_ylim(ylim)
-        else: 
-            beta_gradients = mode["beta_gradients"]
-            ylim = (-mode["beta_gradients_normalized"]["max_gradient"],
-                         mode["beta_gradients_normalized"]["max_gradient"])
-            width = mode["width"]/1e-6
-            ax.set_ylim(ylim)
-
-        # Extract data
-        y = mode["y"] * 1e6  # Convert y to micrometers
-
-        #if mode["te_fraction"] > 0.5:
-        # Plot the gradient of beta_y in red
-        gradient = beta_gradients["gradient_y"]
-        color = 'orange'
-        label = f"Gradient of $\\beta$-factor at $z={z_position * 1e9:.0f}nm$)"
-        # else:
-        #     # Plot the gradient of beta_z in blue
-        #     gradient = beta_gradients["gradient_z"]
-        #     color = 'blue'
-        #     label = f"Gradient of beta_z (z = {z_position * 1e6:.3f} µm)"
-        
-        # Plot the gradient
-        line, = ax.plot(y, gradient,"--" ,  color=color, label=label)
-
-        # Set axis labels and title
-        ax.set_xlabel("y (µm)")
-        ax.set_ylabel("Gradient of $\\beta$-factor", color= color)
-        ax.tick_params(axis='y', labelcolor=color)
-        if title:
-            ax.set_title(title)
-        
-        if xlim is not None: 
-            ax.set_xlim(xlim)
-        else:
-            xlim = (-0.95*width/2, 0.95*width/2)
-
-            ax.set_xlim(xlim)
-            
-
-        #ax.legend()
-        ax.grid(True)
-        return line
-
-    @staticmethod
-    def calculate_beta_gradient(data_array, z_):
-        """
-        Calculate the gradient of the beta factor along the y-axis at a specific z position (z_)
-        and save the results directly into each mode's dictionary.
-
-        Parameters:
-            data_array (list): A list of dictionaries where each dictionary contains mode data, 
-                            including 'y', 'z', and 'beta_factors'.
-            z_ (float): The specific z position (in meters) at which to calculate the gradient.
-
-        Returns:
-            None: The method adds the gradient values to each mode's dictionary within the data array.
-        """
-
-        for data in data_array:
-            for mode in data:
-                y = mode["y"]
-                z = mode["z"]
-                beta_y = mode["beta_factors"]["beta_y"]
-                beta_z = mode["beta_factors"]["beta_z"]
-
-                # Find the index closest to the specified z_ position
-                z_index = (np.abs(z - z_)).argmin()
-
-                # Extract the beta values at the specified z position
-                beta_y_at_z = beta_y[:, z_index]
-                beta_z_at_z = beta_z[:, z_index]
-
-                # Calculate the gradient with respect to y
-                gradient_y = np.gradient(beta_y_at_z, y)
-                gradient_z = np.gradient(beta_z_at_z, y)
-
-                # Save the gradients in the mode dictionary
-                mode["beta_gradients"] = {
-                    "gradient_y": gradient_y,
-                    "gradient_z": gradient_z,
-                    "y": y,
-                    "z_index": z_index,
-                    "z_value": z[z_index]
-                }
-
-
-    @staticmethod
-    def plot_beta_at_z(z_, ax, mode):
-        """
-        Plots the values of beta_y or beta_z at a specific value of z = z_ on the right y-axis.
-        Plots beta_y if TE fraction > 0.5, otherwise plots beta_z.
-
-        Parameters:
-        - z_ (float): The specific z position (in meters) at which to plot the beta values.
-        - ax: The matplotlib axis on which to plot the data. This will be the left axis, and a new right axis will be created.
-        - mode: A dictionary containing the mode data, including 'y', 'z', and 'beta_factors'.
-
-        Returns:
-        - None: The function directly plots on the provided axis.
-        """
-        
-        # Create a secondary y-axis on the right
-        ax_right = ax.twinx()
-
-        # Extract the beta factors and spatial coordinates
-        y = mode["y"] * 1e6  # Convert y to micrometers
-        z = mode["z"]
-        beta_y = mode["beta_factors"]["beta_y"]
-        beta_z = mode["beta_factors"]["beta_z"]
-        
-        # Find the index closest to the specified z_ value
-        z_index = (np.abs(z - z_)).argmin()
-        
-        # Determine which beta factor to plot based on the TE fraction
-        #if mode["te_fraction"] > 0.5:
-        beta_values = beta_y[:, z_index]
-        color = 'red'
-        label = f"$\\beta$-factor at $z = {z_ * 1e9:.0f} nm$"
-        # else:
-        #     beta_values = beta_z[:, z_index]
-        #     color = 'blue'
-        #     label = f"beta_z at z = {z_ * 1e9:.0f} µm"
-        
-        # Plot the beta values along the y-axis at z = z_ on the right y-axis
-        line, = ax_right.plot(y, beta_values, color=color, label=label)
-        
-        # Set axis labels and title
-        ax.set_xlabel("y (µm)")
-        ax.set_title(f"$\\beta$-factor z = {z_ * 1e6:.2f} µm")
-        
-        ax_right.set_ylabel("$\\beta$-factor", color=color)
-        ax_right.tick_params(axis='y', labelcolor=color)
-        
-        # Add legend and grid
-        #ax_right.legend()
-        ax_right.grid(True)
-
-        ax_right.set_ylim((0,1))
-        return line
-
-
-
     @staticmethod
     def get_beta_at_position(mode, y0=0, z0=313e-9/2, y_span=None, z_span=None):
                 
@@ -633,31 +225,9 @@ class Analysis_wg:
             
         return result
 
-
- 
-
-
-    @staticmethod
-    def find_te_modes_with_highest_neff(data_points):
-        modes=[]
-        widths =[]
-        heights=[]
-
-        for data_point in data_points:
-            width = data_point["width"]
-            height = data_point["height"]
-            for mode in data_point["modes"]:
-                if mode["te_fraction"]>0.5:
-                    mode["width"] = width
-                    mode["height"] = height
-                    widths.append(width)
-                    heights.append(height)
-                    modes.append(mode)
-                    break
-        return (widths, heights, modes)
     
-
-    def find_max_beta_and_mode(plottable_results, modes, ax, colormap = "inferno"):
+    @staticmethod
+    def map_beta(plottable_results, modes, ax, title,  colormap = "inferno"):
         # Convert width and height to micrometers (µm) for axes, and to nanometers (nm) for legend
         width = np.array([result['width'] for result in plottable_results]) * 1e6  # For plotting (µm)
         height = np.array([result['height'] for result in plottable_results]) * 1e6  # For plotting (µm)
@@ -694,7 +264,8 @@ class Analysis_wg:
         
         # Plotting
         contour = ax.contourf(width_grid, height_grid, beta_grid, cmap=colormap, levels=np.linspace(0, 1, 100))
-        plt.colorbar(contour, ax=ax)
+        cbar = plt.colorbar(contour, ax=ax, label=rf"$\beta$-factor")
+        cbar.ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.2f}'))
         
         # Highlight the maximum beta value
         ax.scatter(max_width, max_height, color='red', 
@@ -706,7 +277,10 @@ class Analysis_wg:
         
         ax.set_xlabel('Width (µm)')
         ax.set_ylabel('Height (µm)')
-        ax.set_title(r'$\beta$-factor mapping')
+        ax.set_title(rf"""
+    {title}
+    $\beta$-factor mapping
+    """)
 
         # Find the corresponding mode in the modes array
         corresponding_mode = None
@@ -718,12 +292,39 @@ class Analysis_wg:
         return max_width, max_height, max_y, max_z, corresponding_mode
 
     
+    @staticmethod
+    def map_TE_fraction(plottable_results, ax,title, colormap = "inferno"):
+        width = np.array([result['width'] for result in plottable_results]) * 1e6  # For plotting (µm)
+        height = np.array([result['height'] for result in plottable_results]) * 1e6  # For plotting (µm)
+        te_fraction = np.array([result['te_fraction'] for result in plottable_results])
+       
+        # Create grid data for surface plot
+        width_unique = np.unique(width)
+        height_unique = np.unique(height)
+        
+        width_grid, height_grid = np.meshgrid(width_unique, height_unique)
+        te_fraction_grid = np.zeros_like(width_grid, dtype=float)
+        for i in range(len(width)):
+            width_index = np.where(width_unique == width[i])[0][0]
+            height_index = np.where(height_unique == height[i])[0][0]
+            te_fraction_grid[height_index, width_index] = te_fraction[i]
+        # Plotting
+        contour = ax.contourf(width_grid, height_grid, te_fraction_grid, cmap=colormap, levels=np.linspace(0.5, 1, 100))
+        cbar = plt.colorbar(contour, ax=ax, label=rf"TE-fraction (%)")
+        cbar.ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.2f}'))
+
+        ax.set_xlabel('Width (µm)')
+        ax.set_ylabel('Height (µm)')
+        ax.set_title(rf"""
+    {title}
+    TE-fraction mapping
+    """)
 
    
 
     @staticmethod
     def plot_beta_vs_yz(
-        mode, ax, y_span=2, z_span=2, height_bot=350e-9, colormap='inferno',
+        mode, ax, title, y_span=2, z_span=2, height_bot=350e-9, colormap='inferno',
         top_rect_color='purple', bottom_rect_color='blue'):
         
         y = mode["y"] * 1e9  # Convert y to nanometers (nm)
@@ -749,11 +350,16 @@ class Analysis_wg:
         
         # Plot the beta values with the specified colormap and normalized from 0 to 1
         contour = ax.contourf(y_grid, z_grid, beta_grid, cmap=colormap, levels=np.linspace(0, 1, 100))
-        plt.colorbar(contour, ax=ax, label=rf"$\beta$-factor")
-        
+        cbar = plt.colorbar(contour, ax=ax, label=rf"$\beta$-factor")
+        cbar.ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.2f}'))
+
+        # Restrict the beta values to be within the waveguide area
+        within_waveguide = (np.abs(y_grid) <= 0.9*width/2) & (np.abs(z_grid) <= 0.9*height/2)
+    
+    
         # Find the maximum beta value and its location
-        max_beta = np.max(beta_grid)
-        max_index = np.unravel_index(np.argmax(beta_grid, axis=None), beta_grid.shape)
+        max_beta = np.max(beta_grid[within_waveguide])
+        max_index = np.unravel_index(np.argmax(beta_grid* within_waveguide, axis=None), beta_grid.shape)
         max_y = y_grid[max_index]
         max_z = z_grid[max_index]
         
@@ -762,7 +368,7 @@ class Analysis_wg:
         max_z_nm = int(max_z)
         
         # Print the position of the maximum beta for verification
-        print(f"Max $\beta$-factor position: y = {max_y_nm} nm, z = {max_z_nm} nm")
+        print(fr"Max $\beta$-factor position: y = {max_y_nm} nm, z = {max_z_nm} nm")
         
         # Mark the maximum beta value
         ax.scatter(max_y, max_z, color='red', s=50, 
@@ -770,19 +376,33 @@ class Analysis_wg:
     QD Position: (y={max_y_nm} nm, z={max_z_nm} nm)""")
         
         # Draw the rectangles with specified colors and thicker black lines
-        rect1 = Rectangle((-width/2, 0), width, height, 
-                        linewidth=2, edgecolor=top_rect_color, facecolor='none')
-        rect2 = Rectangle((-width/2, -height_bot), width, height_bot, 
-                        linewidth=2, edgecolor=bottom_rect_color, facecolor='none')
         
-        ax.add_patch(rect1)
-        ax.add_patch(rect2)
+        if int(height_bot) !=0: 
+            rect1 = Rectangle((-width/2, 0), width, height, 
+                            linewidth=2, edgecolor=top_rect_color, facecolor='none')
+            rect2 = Rectangle((-width/2, -height_bot), width, height_bot, 
+                            linewidth=2, edgecolor=bottom_rect_color, facecolor='none')
+            
+            ax.add_patch(rect1)
+            ax.add_patch(rect2)
+            # Draw the horizontal dashed line at height/2
+            ax.axhline(height/2, color='black', linestyle='--', linewidth=0.5)
+        else:
+            rect1 = Rectangle((-width/2, -height/2), width, height, 
+                            linewidth=2, edgecolor=top_rect_color, facecolor='none')
+            ax.add_patch(rect1)
+            # Draw the horizontal dashed line at height/2
+            ax.axhline(0, color='black', linestyle='--', linewidth=0.5)
+
+
+        ax.set_aspect('equal', adjustable='box')
         
-        # Draw the horizontal dashed line at height/2
-        ax.axhline(height/2, color='black', linestyle='--', linewidth=1.5)
+        
         
         # Update the title to include waveguide size in nm
-        ax.set_title(rf"""$\beta$-factor vs y and z
+        ax.set_title(rf"""
+    {title}
+    $\beta$-factor vs y and z
     Waveguide size: {width:.0f} nm x {height:.0f} nm""")
         
         ax.set_xlabel('y (nm)')
@@ -830,7 +450,7 @@ class Analysis_wg:
 
     
     def plot_electric_field(
-        mode, ax, y_span=2, z_span=2, height_bot=350e-9, colormap='jet',
+        mode, ax,title,  y_span=2, z_span=2, height_bot=350e-9, colormap='jet',
         top_rect_color='black', bottom_rect_color='black'):
         
         y = mode["y"] * 1e9  # Convert y to nanometers (nm)
@@ -858,21 +478,33 @@ class Analysis_wg:
         contour = ax.contourf(y_grid, z_grid, E2_grid, cmap=colormap, levels=100)
         plt.colorbar(contour, ax=ax, label=r"$E^2$ (a.u.)")
         
-        # Draw the rectangles representing the waveguide structure
-        rect1 = Rectangle((-width/2, 0), width, height, 
-                        linewidth=2, edgecolor=top_rect_color, facecolor='none')
-        rect2 = Rectangle((-width/2, -height_bot), width, height_bot, 
-                        linewidth=2, edgecolor=bottom_rect_color, facecolor='none')
-        
-        ax.add_patch(rect1)
-        ax.add_patch(rect2)
-        
-        # Draw the horizontal dashed line at height/2
-        ax.axhline(height/2, color='black', linestyle='--', linewidth=1.5)
+        if int(height_bot) !=0: 
+            rect1 = Rectangle((-width/2, 0), width, height, 
+                            linewidth=2, edgecolor=top_rect_color, facecolor='none')
+            rect2 = Rectangle((-width/2, -height_bot), width, height_bot, 
+                            linewidth=2, edgecolor=bottom_rect_color, facecolor='none')
+            
+            ax.add_patch(rect1)
+            ax.add_patch(rect2)
+            # Draw the horizontal dashed line at height/2
+            ax.axhline(height/2, color='black', linestyle='--', linewidth=0.5)
+        else:
+            rect1 = Rectangle((-width/2, -height/2), width, height, 
+                            linewidth=2, edgecolor=top_rect_color, facecolor='none')
+            ax.add_patch(rect1)
+            # Draw the horizontal dashed line at height/2
+            ax.axhline(0, color='black', linestyle='--', linewidth=0.5)
+
+
+        ax.set_aspect('equal', adjustable='box')
         
         # Update the title to include waveguide size in nm
-        ax.set_title(rf"""Electric Field Intensity
-    Waveguide size: {width:.0f} nm x {height:.0f} nm""")
+        ax.set_title(rf"""
+    {title}
+    Electric Field Intensity
+    Waveguide size: {width:.0f} nm x {height:.0f} nm
+    $n_{{eff}} = {mode['neff'].real.squeeze():0.2f}$, $f_{{TE}}={mode['te_fraction']*100 : 0.0f} \%$
+    """)
         
         ax.set_xlabel('y (nm)')
         ax.set_ylabel('z (nm)')
