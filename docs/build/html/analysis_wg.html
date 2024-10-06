@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>analysis_wg module &mdash; Adiabatic Taper 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="FDE_sim_wg_input module" href="FDE_sim_wg_input.html" />
+    <link rel="prev" title="taperDesigner module" href="taperDesigner.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Adiabatic Taper
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="waveguides_simulations.html">waveguides_simulations module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="taperDesigner.html">taperDesigner module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">analysis_wg module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#analysis_wg.Analysis_wg"><code class="docutils literal notranslate"><span class="pre">Analysis_wg</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#analysis_wg.Analysis_wg.calculate_beta_factor"><code class="docutils literal notranslate"><span class="pre">Analysis_wg.calculate_beta_factor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analysis_wg.Analysis_wg.calculate_poynting_vector"><code class="docutils literal notranslate"><span class="pre">Analysis_wg.calculate_poynting_vector()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analysis_wg.Analysis_wg.extract_data"><code class="docutils literal notranslate"><span class="pre">Analysis_wg.extract_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analysis_wg.Analysis_wg.find_te_modes_with_highest_neff"><code class="docutils literal notranslate"><span class="pre">Analysis_wg.find_te_modes_with_highest_neff()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analysis_wg.Analysis_wg.get_beta_at_position"><code class="docutils literal notranslate"><span class="pre">Analysis_wg.get_beta_at_position()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analysis_wg.Analysis_wg.map_TE_fraction"><code class="docutils literal notranslate"><span class="pre">Analysis_wg.map_TE_fraction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analysis_wg.Analysis_wg.map_beta"><code class="docutils literal notranslate"><span class="pre">Analysis_wg.map_beta()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analysis_wg.Analysis_wg.plot_beta_vs_yz"><code class="docutils literal notranslate"><span class="pre">Analysis_wg.plot_beta_vs_yz()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analysis_wg.Analysis_wg.plot_cutoff_line"><code class="docutils literal notranslate"><span class="pre">Analysis_wg.plot_cutoff_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analysis_wg.Analysis_wg.plot_electric_field"><code class="docutils literal notranslate"><span class="pre">Analysis_wg.plot_electric_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analysis_wg.Analysis_wg.purcell_factor"><code class="docutils literal notranslate"><span class="pre">Analysis_wg.purcell_factor()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="FDE_sim_wg_input.html">FDE_sim_wg_input module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Sweep_generator.html">Sweep_generator module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Adiabatic Taper</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">analysis_wg module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/analysis_wg.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-analysis_wg">
+<span id="analysis-wg-module"></span><h1>analysis_wg module<a class="headerlink" href="#module-analysis_wg" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="analysis_wg.Analysis_wg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">analysis_wg.</span></span><span class="sig-name descname"><span class="pre">Analysis_wg</span></span><a class="headerlink" href="#analysis_wg.Analysis_wg" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_wg.Analysis_wg.calculate_beta_factor">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_beta_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modes_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analysis_wg.Analysis_wg.calculate_beta_factor" title="Link to this definition"></a></dt>
+<dd><p>Calculate the beta factor for each mode in the data array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>modes_data</strong> (<em>list</em>) – List of mode data dictionaries.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function modifies the input list in place, adding beta factors to each mode.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_wg.Analysis_wg.calculate_poynting_vector">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_poynting_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analysis_wg.Analysis_wg.calculate_poynting_vector" title="Link to this definition"></a></dt>
+<dd><p>Calculate both the complex Poynting vector and its time-averaged real part from the electric and magnetic field components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mode_data</strong> (<em>dict</em>) – A dictionary containing the electric and magnetic field components.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_wg.Analysis_wg.extract_data">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analysis_wg.Analysis_wg.extract_data" title="Link to this definition"></a></dt>
+<dd><p>Extract mode data from the simulation environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> – The simulation environment object.</p></li>
+<li><p><strong>mode_name</strong> (<em>str</em>) – The name of the mode to extract data from.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the extracted mode data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_wg.Analysis_wg.find_te_modes_with_highest_neff">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_te_modes_with_highest_neff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analysis_wg.Analysis_wg.find_te_modes_with_highest_neff" title="Link to this definition"></a></dt>
+<dd><p>Find the TE modes with the highest effective index (neff) for each data point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data_points</strong> (<em>list</em>) – A list of dictionaries, each containing waveguide data and modes.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing lists of widths, heights, and modes with the highest TE fraction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_wg.Analysis_wg.get_beta_at_position">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_beta_at_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.565e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_span</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_span</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analysis_wg.Analysis_wg.get_beta_at_position" title="Link to this definition"></a></dt>
+<dd><p>Get the beta factor at a specific position (y0, z0) or within a specified span around that position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> (<em>dict</em>) – A dictionary containing the mode data.</p></li>
+<li><p><strong>y0</strong> (<em>float</em>) – The y-coordinate of the target position (default is 0).</p></li>
+<li><p><strong>z0</strong> (<em>float</em>) – The z-coordinate of the target position (default is 313e-9 / 2).</p></li>
+<li><p><strong>y_span</strong> (<em>float</em><em>, </em><em>optional</em>) – The span around y0 to consider (default is None).</p></li>
+<li><p><strong>z_span</strong> (<em>float</em><em>, </em><em>optional</em>) – The span around z0 to consider (default is None).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the target (maximum) beta factor, the position of the maximum and mode properties.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_wg.Analysis_wg.map_TE_fraction">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">map_TE_fraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plottable_results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'inferno'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analysis_wg.Analysis_wg.map_TE_fraction" title="Link to this definition"></a></dt>
+<dd><p>Map the TE fraction for different waveguide dimensions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plottable_results</strong> (<em>list</em>) – List of dictionaries containing the results to plot.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em>) – The axes to plot on.</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – The title of the plot.</p></li>
+<li><p><strong>colormap</strong> (<em>str</em>) – The colormap to use for the plot (default is “inferno”).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_wg.Analysis_wg.map_beta">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">map_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plottable_results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'inferno'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analysis_wg.Analysis_wg.map_beta" title="Link to this definition"></a></dt>
+<dd><p>Map the beta factor for different waveguide dimensions and highlight the maximum beta factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plottable_results</strong> (<em>list</em>) – List of dictionaries containing the results to plot. Each dictionary should contain:
+- ‘width’: The width of the waveguide.
+- ‘height’: The height of the waveguide.
+- ‘beta_target’: The beta factor at the target position.
+- ‘y_target’: The y-coordinate of the target position.
+- ‘z_target’: The z-coordinate of the target position.
+- ‘te_fraction’: The TE polarization fraction.</p></li>
+<li><p><strong>modes</strong> (<em>list</em>) – List of mode data dictionaries.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em>) – The axes to plot on.</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – The title of the plot.</p></li>
+<li><p><strong>colormap</strong> (<em>str</em>) – The colormap to use for the plot (default is “inferno”).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the width, height, y, and z of the maximum beta factor, and the corresponding mode.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_wg.Analysis_wg.plot_beta_vs_yz">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_beta_vs_yz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_span_plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_span_plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.565e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_span_find_beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_span_find_beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height_bot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.5e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'inferno'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_rect_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'purple'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom_rect_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'blue'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analysis_wg.Analysis_wg.plot_beta_vs_yz" title="Link to this definition"></a></dt>
+<dd><p>Plots the beta-factor as a function of y and z coordinates for a given mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> (<em>dict</em>) – A dictionary containing the mode data with keys “y”, “z”, “beta”, “width”, and “height”.
+- “y” (numpy array): The y-coordinates of the mode.
+- “z” (numpy array): The z-coordinates of the mode.
+- “beta” (numpy array): The beta-factor values corresponding to the y and z coordinates.
+- “width” (float): The width of the waveguide.
+- “height” (float): The height of the waveguide.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em>) – The axes object where the plot will be drawn.</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – The title of the plot.</p></li>
+<li><p><strong>y_span_plot</strong> (<em>float</em><em>, </em><em>optional</em>) – The span of the y-axis in units of waveguide width (default is 2).</p></li>
+<li><p><strong>z_span_plot</strong> (<em>float</em><em>, </em><em>optional</em>) – The span of the z-axis in units of waveguide height (default is 2).</p></li>
+<li><p><strong>y0</strong> (<em>float</em><em>, </em><em>optional</em>) – The y-coordinate of the target position (default is 0).</p></li>
+<li><p><strong>z0</strong> (<em>float</em><em>, </em><em>optional</em>) – The z-coordinate of the target position (default is 313e-9 / 2).</p></li>
+<li><p><strong>y_span_find_beta</strong> (<em>float</em><em>, </em><em>optional</em>) – The span around y0 to consider for finding the beta factor (default is 0.9).</p></li>
+<li><p><strong>z_span_find_beta</strong> (<em>float</em><em>, </em><em>optional</em>) – The span around z0 to consider for finding the beta factor (default is 0.9).</p></li>
+<li><p><strong>height_bot</strong> (<em>float</em><em>, </em><em>optional</em>) – The height of the bottom rectangle in meters (default is 350e-9).</p></li>
+<li><p><strong>colormap</strong> (<em>str</em><em>, </em><em>optional</em>) – The colormap to be used for the plot (default is ‘inferno’).</p></li>
+<li><p><strong>top_rect_color</strong> (<em>str</em><em>, </em><em>optional</em>) – The color of the top rectangle (default is ‘purple’).</p></li>
+<li><p><strong>bottom_rect_color</strong> (<em>str</em><em>, </em><em>optional</em>) – The color of the bottom rectangle (default is ‘blue’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function converts the y, z, width, height, and height_bot values to nanometers for plotting.</p></li>
+<li><p>It restricts the beta values to be within the waveguide area and finds the maximum beta value and its location.</p></li>
+<li><p>The position of the maximum beta value is printed for verification.</p></li>
+<li><p>The plot includes rectangles representing the waveguide and a scatter point marking the maximum beta value.</p></li>
+<li><p>The title of the plot is updated to include the waveguide size in nanometers.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_wg.Analysis_wg.plot_cutoff_line">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_cutoff_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analysis_wg.Analysis_wg.plot_cutoff_line" title="Link to this definition"></a></dt>
+<dd><p>Plot the single-mode cutoff line based on the data points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_points</strong> (<em>list</em>) – List of dictionaries containing waveguide data points.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em>) – The axes to plot on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_wg.Analysis_wg.plot_electric_field">
+<span class="sig-name descname"><span class="pre">plot_electric_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_span</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_span</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height_bot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.5e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jet'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_rect_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom_rect_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analysis_wg.Analysis_wg.plot_electric_field" title="Link to this definition"></a></dt>
+<dd><p>Plot the electric field intensity for a given mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> (<em>dict</em>) – A dictionary containing the mode data.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em>) – The axes to plot on.</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – The title of the plot.</p></li>
+<li><p><strong>y_span</strong> (<em>float</em><em>, </em><em>optional</em>) – The span of the y-axis in units of waveguide width (default is 2).</p></li>
+<li><p><strong>z_span</strong> (<em>float</em><em>, </em><em>optional</em>) – The span of the z-axis in units of waveguide height (default is 2).</p></li>
+<li><p><strong>height_bot</strong> (<em>float</em><em>, </em><em>optional</em>) – The height of the bottom rectangle in meters (default is 350e-9).</p></li>
+<li><p><strong>colormap</strong> (<em>str</em><em>, </em><em>optional</em>) – The colormap to be used for the plot (default is ‘jet’).</p></li>
+<li><p><strong>top_rect_color</strong> (<em>str</em><em>, </em><em>optional</em>) – The color of the top rectangle (default is ‘black’).</p></li>
+<li><p><strong>bottom_rect_color</strong> (<em>str</em><em>, </em><em>optional</em>) – The color of the bottom rectangle (default is ‘black’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_wg.Analysis_wg.purcell_factor">
+<span class="sig-name descname"><span class="pre">purcell_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lam0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analysis_wg.Analysis_wg.purcell_factor" title="Link to this definition"></a></dt>
+<dd><p>Calculate the Purcell factors (gamma_y, gamma_z) using the Ey and Ez components of the electric field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode_data</strong> (<em>dict</em>) – A dictionary containing the mode data.</p></li>
+<li><p><strong>lam0</strong> (<em>float</em>) – The wavelength in meters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary with the Purcell factors calculated using Ey and Ez components.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="taperDesigner.html" class="btn btn-neutral float-left" title="taperDesigner module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="FDE_sim_wg_input.html" class="btn btn-neutral float-right" title="FDE_sim_wg_input module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Enrico Vallar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

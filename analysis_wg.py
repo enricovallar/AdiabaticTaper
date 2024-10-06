@@ -2,7 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm, Normalize
 from matplotlib.patches import Rectangle
-from scipy.integrate import simps
+try:
+    from scipy.integrate import simps
+except ImportError:
+    from scipy.integrate import simpson as simps
 from scipy.interpolate import interp1d
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.patches import Rectangle
@@ -21,6 +24,16 @@ class Analysis_wg:
     
     @staticmethod
     def extract_data(env, mode_name):
+        """
+        Extract mode data from the simulation environment.
+
+        Args:
+            env: The simulation environment object.
+            mode_name (str): The name of the mode to extract data from.
+
+        Returns:
+            dict: A dictionary containing the extracted mode data.
+        """
         neff = env.getdata(mode_name, "neff")
         te_fraction = env.getdata(mode_name, "TE polarization fraction")
     
@@ -63,11 +76,11 @@ class Analysis_wg:
         """
         Calculate both the complex Poynting vector and its time-averaged real part from the electric and magnetic field components.
 
-        Parameters:
-            data (dict): A dictionary containing the electric and magnetic field components.
+        Args:
+            mode_data (dict): A dictionary containing the electric and magnetic field components.
 
         Returns:
-            dict: A dictionary with the complex Poynting vector components, the time-averaged real part, and their magnitudes.
+            None
         """
         # Extract electric and magnetic field components
         Ey = mode_data["Ey"]
@@ -89,8 +102,9 @@ class Analysis_wg:
         """
         Calculate the Purcell factors (gamma_y, gamma_z) using the Ey and Ez components of the electric field.
 
-        Parameters:
+        Args:
             mode_data (dict): A dictionary containing the mode data.
+            lam0 (float): The wavelength in meters.
 
         Returns:
             dict: A dictionary with the Purcell factors calculated using Ey and Ez components.
@@ -133,11 +147,11 @@ class Analysis_wg:
         """
         Calculate the beta factor for each mode in the data array.
 
-        Parameters:
-        - data_array: List of mode data dictionaries.
+        Args:
+            modes_data (list): List of mode data dictionaries.
 
         Returns:
-        - None: This function modifies the input list in place, adding beta factors to each mode.
+            None: This function modifies the input list in place, adding beta factors to each mode.
         """
         
         P = []
@@ -161,7 +175,7 @@ class Analysis_wg:
         """
         Find the TE modes with the highest effective index (neff) for each data point.
 
-        Parameters:
+        Args:
             data_points (list): A list of dictionaries, each containing waveguide data and modes.
 
         Returns:
@@ -192,7 +206,7 @@ class Analysis_wg:
         """
         Get the beta factor at a specific position (y0, z0) or within a specified span around that position.
 
-        Parameters:
+        Args:
             mode (dict): A dictionary containing the mode data.
             y0 (float): The y-coordinate of the target position (default is 0).
             z0 (float): The z-coordinate of the target position (default is 313e-9 / 2).
@@ -257,14 +271,14 @@ class Analysis_wg:
         """
         Map the beta factor for different waveguide dimensions and highlight the maximum beta factor.
 
-        Parameters:
+        Args:
             plottable_results (list): List of dictionaries containing the results to plot. Each dictionary should contain:
-            - 'width': The width of the waveguide.
-            - 'height': The height of the waveguide.
-            - 'beta_target': The beta factor at the target position.
-            - 'y_target': The y-coordinate of the target position.
-            - 'z_target': The z-coordinate of the target position.
-            - 'te_fraction': The TE polarization fraction.
+                - 'width': The width of the waveguide.
+                - 'height': The height of the waveguide.
+                - 'beta_target': The beta factor at the target position.
+                - 'y_target': The y-coordinate of the target position.
+                - 'z_target': The z-coordinate of the target position.
+                - 'te_fraction': The TE polarization fraction.
             modes (list): List of mode data dictionaries.
             ax (matplotlib.axes.Axes): The axes to plot on.
             title (str): The title of the plot.
@@ -336,7 +350,6 @@ class Analysis_wg:
         return max_width, max_height, max_y, max_z, corresponding_mode
     
     
-    
     @staticmethod
     def map_TE_fraction(plottable_results, ax, title, colormap="inferno"):
         """
@@ -382,7 +395,6 @@ class Analysis_wg:
     """)
 
    
-
     @staticmethod
     def plot_beta_vs_yz(
                         mode, 
@@ -402,56 +414,35 @@ class Analysis_wg:
         """
         Plots the beta-factor as a function of y and z coordinates for a given mode.
 
-        Parameters:
-        -----------
-        mode : dict
-            A dictionary containing the mode data with keys "y", "z", "beta", "width", and "height".
-            - "y" : numpy array
-              The y-coordinates of the mode.
-            - "z" : numpy array
-              The z-coordinates of the mode.
-            - "beta" : numpy array
-              The beta-factor values corresponding to the y and z coordinates.
-            - "width" : float
-              The width of the waveguide.
-            - "height" : float
-              The height of the waveguide.
-        ax : matplotlib.axes.Axes
-            The axes object where the plot will be drawn.
-        title : str
-            The title of the plot.
-        y_span_plot : float, optional
-            The span of the y-axis in units of waveguide width (default is 2).
-        z_span_plot : float, optional
-            The span of the z-axis in units of waveguide height (default is 2).
-        y0 : float, optional
-            The y-coordinate of the target position (default is 0).
-        z0 : float, optional
-            The z-coordinate of the target position (default is 313e-9 / 2).
-        y_span_find_beta : float, optional
-            The span around y0 to consider for finding the beta factor (default is 0.9).
-        z_span_find_beta : float, optional
-            The span around z0 to consider for finding the beta factor (default is 0.9).
-        height_bot : float, optional
-            The height of the bottom rectangle in meters (default is 350e-9).
-        colormap : str, optional
-            The colormap to be used for the plot (default is 'inferno').
-        top_rect_color : str, optional
-            The color of the top rectangle (default is 'purple').
-        bottom_rect_color : str, optional
-            The color of the bottom rectangle (default is 'blue').
+        Args:
+            mode (dict): A dictionary containing the mode data with keys "y", "z", "beta", "width", and "height".
+                - "y" (numpy array): The y-coordinates of the mode.
+                - "z" (numpy array): The z-coordinates of the mode.
+                - "beta" (numpy array): The beta-factor values corresponding to the y and z coordinates.
+                - "width" (float): The width of the waveguide.
+                - "height" (float): The height of the waveguide.
+            ax (matplotlib.axes.Axes): The axes object where the plot will be drawn.
+            title (str): The title of the plot.
+            y_span_plot (float, optional): The span of the y-axis in units of waveguide width (default is 2).
+            z_span_plot (float, optional): The span of the z-axis in units of waveguide height (default is 2).
+            y0 (float, optional): The y-coordinate of the target position (default is 0).
+            z0 (float, optional): The z-coordinate of the target position (default is 313e-9 / 2).
+            y_span_find_beta (float, optional): The span around y0 to consider for finding the beta factor (default is 0.9).
+            z_span_find_beta (float, optional): The span around z0 to consider for finding the beta factor (default is 0.9).
+            height_bot (float, optional): The height of the bottom rectangle in meters (default is 350e-9).
+            colormap (str, optional): The colormap to be used for the plot (default is 'inferno').
+            top_rect_color (str, optional): The color of the top rectangle (default is 'purple').
+            bottom_rect_color (str, optional): The color of the bottom rectangle (default is 'blue').
 
         Returns:
-        --------
-        None
+            None
 
         Notes:
-        ------
-        - The function converts the y, z, width, height, and height_bot values to nanometers for plotting.
-        - It restricts the beta values to be within the waveguide area and finds the maximum beta value and its location.
-        - The position of the maximum beta value is printed for verification.
-        - The plot includes rectangles representing the waveguide and a scatter point marking the maximum beta value.
-        - The title of the plot is updated to include the waveguide size in nanometers.
+            - The function converts the y, z, width, height, and height_bot values to nanometers for plotting.
+            - It restricts the beta values to be within the waveguide area and finds the maximum beta value and its location.
+            - The position of the maximum beta value is printed for verification.
+            - The plot includes rectangles representing the waveguide and a scatter point marking the maximum beta value.
+            - The title of the plot is updated to include the waveguide size in nanometers.
         """
 
         y = mode["y"] 
