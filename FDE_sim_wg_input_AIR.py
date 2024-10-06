@@ -197,7 +197,7 @@ width_array = loaded_data["width_array"]
 height_array = loaded_data["height_array"]
 
 
-from analysis_wg_2 import Analysis_wg
+from analysis_wg import Analysis_wg
 
 k = 0
 for j, height in enumerate(height_array):
@@ -286,7 +286,7 @@ width_array = loaded_data["width_array"]
 
 #_________________DATA TO PLOT_____________________________________________________
 NAME_SPEC ="_air"
-from analysis_wg_2 import Analysis_wg
+from analysis_wg import Analysis_wg
 widths, heights, modes = Analysis_wg.find_te_modes_with_highest_neff(data_points)
 
 plottable_results = []

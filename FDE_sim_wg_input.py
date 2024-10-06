@@ -10,7 +10,7 @@ Modules:
     - os: Provides a way of using operating system dependent functionality.
     - matplotlib.pyplot: Used for plotting graphs and visualizations.
     - analysis_wg: Contains Analysis_wg class for analyzing waveguide data.
-    - analysis_wg_2: Contains additional analysis functions for waveguide data.
+    - analysis_wg: Contains additional analysis functions for waveguide data.
 Constants:
     - PATH_MODELS: Path to save the waveguide models.
     - FILE_NAME: Base name for the waveguide model files.
@@ -243,7 +243,7 @@ spec_win = importlib.util.spec_from_file_location('lumapi', 'C:\\Program Files\\
 lumapi = importlib.util.module_from_spec(spec_win) # 
 spec_win.loader.exec_module(lumapi)
 import numpy as np
-from analysis_wg_2 import Analysis_wg
+from analysis_wg import Analysis_wg
 
 #specify the paths
 PATH_MODELS = rf"D:\WG\models_mg_inputs"
@@ -357,7 +357,7 @@ except:
 #_______DATA_TO_PLOT_________________
 
 # 1) Find the modes with the highest neff
-from analysis_wg_2 import Analysis_wg
+from analysis_wg import Analysis_wg
 widths, heights, modes = Analysis_wg.find_te_modes_with_highest_neff(data_points)
 
 plottable_results = []
