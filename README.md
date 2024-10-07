@@ -6,4 +6,4 @@ This repo contains the scripts to:
 - sweep the parameters and save the models
 - Map the beta-factor over different width and height of the waveguide.
 
-Documentation is [here](./docs/build/html/index.html).
+Documentation is [here](./docs/build/html/index.html). Read it in github page. 

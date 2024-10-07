@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FDE_sim_wg_input module &mdash; Adiabatic Taper 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Sweep_generator module" href="Sweep_generator.html" />
+    <link rel="prev" title="analysis_wg module" href="analysis_wg.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Adiabatic Taper
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="waveguides_simulations.html">waveguides_simulations module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="taperDesigner.html">taperDesigner module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis_wg.html">analysis_wg module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">FDE_sim_wg_input module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#waveguide-simulations-using-lumerical-mode-solutions">Waveguide Simulations using Lumerical MODE Solutions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules">Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#constants">Constants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#variables">Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Sweep_generator.html">Sweep_generator module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Adiabatic Taper</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">FDE_sim_wg_input module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/FDE_sim_wg_input.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-FDE_sim_wg_input">
+<span id="fde-sim-wg-input-module"></span><h1>FDE_sim_wg_input module<a class="headerlink" href="#module-FDE_sim_wg_input" title="Link to this heading"></a></h1>
+<section id="waveguide-simulations-using-lumerical-mode-solutions">
+<h2>Waveguide Simulations using Lumerical MODE Solutions<a class="headerlink" href="#waveguide-simulations-using-lumerical-mode-solutions" title="Link to this heading"></a></h2>
+<p>This script performs waveguide simulations using Lumerical MODE Solutions and processes the resulting data.</p>
+<section id="modules">
+<h3>Modules<a class="headerlink" href="#modules" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>waveguides_simulations</strong>:</dt><dd><ul>
+<li><p>Contains <cite>GeomBuilder</cite> and <cite>WaveguideModeFinder</cite> classes for building geometries and finding waveguide modes.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>importlib.util</strong>:</dt><dd><ul>
+<li><p>Used for dynamic import of the Lumerical API.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>numpy</strong>:</dt><dd><ul>
+<li><p>Provides support for large, multi-dimensional arrays and matrices.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>time</strong>:</dt><dd><ul>
+<li><p>Provides various time-related functions.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>pickle</strong>:</dt><dd><ul>
+<li><p>Used for serializing and de-serializing Python object structures.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>os</strong>:</dt><dd><ul>
+<li><p>Provides a way of using operating system-dependent functionality.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>matplotlib.pyplot</strong>:</dt><dd><ul>
+<li><p>Used for plotting graphs and visualizations.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>analysis_wg</strong>:</dt><dd><ul>
+<li><p>Contains <cite>Analysis_wg</cite> class for analyzing waveguide data and additional analysis functions for waveguide data.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="constants">
+<h3>Constants<a class="headerlink" href="#constants" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><cite>PATH_MODELS (str)</cite>: Path to save the waveguide models.</p></li>
+<li><p><cite>FILE_NAME (str)</cite>: Base name for the waveguide model files.</p></li>
+<li><p><cite>PATH_DATA (str)</cite>: Path to save the simulation data.</p></li>
+<li><p><cite>DATA_FILE_NAME (str)</cite>: Name of the file to save the simulation data.</p></li>
+</ul>
+</section>
+<section id="variables">
+<h3>Variables<a class="headerlink" href="#variables" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><cite>height_InP (float)</cite>: Height of the InP layer.</p></li>
+<li><p><cite>height_SiN (float)</cite>: Height of the SiN layer.</p></li>
+<li><p><cite>width_start (int)</cite>: Starting value for waveguide widths in nm.</p></li>
+<li><p><cite>width_stop (int)</cite>: Stopping value for waveguide widths in nm.</p></li>
+<li><p><cite>width_step (int)</cite>: Step size for waveguide widths in nm.</p></li>
+<li><p><cite>width_array (numpy.ndarray)</cite>: Array of waveguide widths.</p></li>
+<li><p><cite>height_start (int)</cite>: Starting value for waveguide heights in nm.</p></li>
+<li><p><cite>height_end (int)</cite>: Ending value for waveguide heights in nm.</p></li>
+<li><p><cite>height_step (int)</cite>: Step size for waveguide heights in nm.</p></li>
+<li><p><cite>height_array (numpy.ndarray)</cite>: Array of waveguide heights.</p></li>
+<li><p><cite>data_points (list)</cite>: List to store the simulation results.</p></li>
+</ul>
+</section>
+<section id="workflow">
+<h3>Workflow<a class="headerlink" href="#workflow" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt><strong>Setup</strong>:</dt><dd><ul class="simple">
+<li><p>Set up paths and constants.</p></li>
+<li><p>Create directories if they do not exist.</p></li>
+<li><p>Define waveguide dimensions.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Simulation</strong>:</dt><dd><ul class="simple">
+<li><p>Loop through each combination of width and height to perform simulations.</p></li>
+<li><p>Save the simulation results.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Data Analysis</strong>:</dt><dd><ul class="simple">
+<li><p>Load the saved simulation data.</p></li>
+<li><p>Analyze the loaded data to extract relevant information.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Data Visualization</strong>:</dt><dd><ul class="simple">
+<li><p>Plot the results and save the plots.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h3>
+<p>Run the script to perform waveguide simulations, save the results, and generate plots for analysis. The script is designed to be run as a standalone module.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="analysis_wg.html" class="btn btn-neutral float-left" title="analysis_wg module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Sweep_generator.html" class="btn btn-neutral float-right" title="Sweep_generator module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Enrico Vallar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
